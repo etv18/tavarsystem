@@ -1,6 +1,6 @@
 package com.tavarlabs.tavarsystem.entity;
 
-import com.tavarlabs.tavarsystem.entity.enums.DocumentType;
+import com.tavarlabs.tavarsystem.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

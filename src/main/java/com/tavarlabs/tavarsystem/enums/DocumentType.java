@@ -1,4 +1,4 @@
-package com.tavarlabs.tavarsystem.entity.enums;
+package com.tavarlabs.tavarsystem.enums;
 
 public enum DocumentType {
     RNC,
