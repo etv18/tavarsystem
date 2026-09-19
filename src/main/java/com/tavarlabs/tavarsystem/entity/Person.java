@@ -31,13 +31,13 @@ public class Person {
     @Column(name = "doc_number", nullable = false, length = 50)
     private String documentNumber;
 
-    @Column(name = "email", nullable = false, length = 256)
+    @Column(name = "email", nullable = false, length = 120)
     private String email;
 
     @Column(name = "telephone", nullable = false, length = 30)
     private String telephone;
 
-    @Column(name = "address", nullable = false, length = 30)
+    @Column(name = "address", nullable = false, length = 256)
     private String address;
 
     @Column(nullable = false)
