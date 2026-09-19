@@ -28,7 +28,7 @@ public class Person {
     @Column(name = "doc_type", nullable = false, length = 20)
     private DocumentType documentType;
 
-    @Column(name = "doc_number", nullable = false, length = 100)
+    @Column(name = "doc_number", nullable = false, length = 50)
     private String documentNumber;
 
     @Column(name = "email", nullable = false, length = 256)
