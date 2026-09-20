@@ -1,7 +1,8 @@
-package com.tavarlabs.tavarsystem.security;
+package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
+import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
