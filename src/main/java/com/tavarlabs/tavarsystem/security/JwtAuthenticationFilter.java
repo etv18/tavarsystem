@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,19 +32,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractToken(request, ACCESS_TOKEN_COOKIE_KEYWORD);
             if(accessToken != null) {
                 UserDetails userDetails = authenticationService.validateToken(accessToken, response);
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authenticaiton = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
+                SecurityContextHolder.getContext().setAuthentication(authenticaiton);
+
+                if(userDetails instanceof TavSysUserDetails) {
+                    request.setAttribute("userId", ((TavSysUserDetails) userDetails).getId());
+                }
             }
         } catch (Exception e) {
             // log the exception
+            log.warn("Received invalid auth token");
+            e.printStackTrace();
         }
+        filterChain.doFilter(request, response);
+        // Without this the request wouldn't be passed of to the next chain of filters therefore it'll never get to the controllers...
     }
 
+    // This util function will extract the jwt token from Http-Only cookies...
     private String extractToken(HttpServletRequest request, String tokenTypeCookieKeyword){
-        // This util function will extract the jwt token from Http-Only cookies...
         if(request.getCookies() != null) {
             for(Cookie cookie: request.getCookies()) {
                 // it'll iterate through the http cookies and if the condition is met it'll return the value which will be the jwt string.
