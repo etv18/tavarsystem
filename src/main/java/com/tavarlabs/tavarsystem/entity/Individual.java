@@ -3,6 +3,7 @@ package com.tavarlabs.tavarsystem.entity;
 import com.tavarlabs.tavarsystem.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,8 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Person {
+@Builder
+public class Individual {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -31,7 +33,7 @@ public class Person {
     @Column(name = "doc_number", nullable = false, length = 50)
     private String documentNumber;
 
-    @Column(name = "email", nullable = false, length = 120)
+    @Column(name = "email", nullable = true, length = 120)
     private String email;
 
     @Column(name = "telephone", nullable = false, length = 30)
