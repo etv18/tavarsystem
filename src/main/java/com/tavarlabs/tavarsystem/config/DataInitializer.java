@@ -10,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
+    private final PasswordEncoder passwordEncoder;
+
     @Bean
     CommandLineRunner initUser(UserRepository userRepo, IndividualRepository individualRepo){
         return args -> {
@@ -31,13 +34,15 @@ public class DataInitializer {
 
             User user = User.builder()
                     .individualId(newIndividual.getId())
-                    .username("jdoe")
-                    .password("admin")
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin"))
                     .role(RoleName.ROLE_OWNER)
                     .isActive(true)
                     .build();
 
             userRepo.save(user);
+
+            System.out.println("---------------> User data saved!!");
         };
     }
 }
