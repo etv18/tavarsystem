@@ -3,6 +3,7 @@ package com.tavarlabs.tavarsystem.entity;
 import com.tavarlabs.tavarsystem.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,14 +14,16 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
+@Table(name = "app_user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "person_id", nullable = false, length = 256)
-    private String personId;
+    @Column(name = "individual_id", nullable = false, length = 256)
+    private UUID individualId;
 
     @Column(nullable = false, length = 100)
     private String username;
