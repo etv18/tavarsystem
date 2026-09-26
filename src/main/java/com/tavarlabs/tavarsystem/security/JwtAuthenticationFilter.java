@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.security;
 
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
+import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -20,7 +21,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
-    private final String ACCESS_TOKEN_COOKIE_KEYWORD = "accessToken";
 
     @Override
     protected void doFilterInternal(
@@ -29,15 +29,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         try{
-            String accessToken = extractToken(request, ACCESS_TOKEN_COOKIE_KEYWORD);
+            String accessToken = extractToken(request, AppKeywords.accessTkn);
+
             if(accessToken != null) {
                 UserDetails userDetails = authenticationService.validateToken(accessToken, response);
-                UsernamePasswordAuthenticationToken authenticaiton = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
-                SecurityContextHolder.getContext().setAuthentication(authenticaiton);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 if(userDetails instanceof TavSysUserDetails) {
                     request.setAttribute("userId", ((TavSysUserDetails) userDetails).getId());
@@ -48,6 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.warn("Received invalid auth token");
             e.printStackTrace();
         }
+
         filterChain.doFilter(request, response);
         // Without this the request wouldn't be passed of to the next chain of filters therefore it'll never get to the controllers...
     }
@@ -58,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             for(Cookie cookie: request.getCookies()) {
                 // it'll iterate through the http cookies and if the condition is met it'll return the value which will be the jwt string.
                 if(tokenTypeCookieKeyword.equals(cookie.getName())) {
-                     cookie.getValue();
+                     return cookie.getValue();
                 }
             }
         }
