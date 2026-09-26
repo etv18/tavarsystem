@@ -33,7 +33,7 @@ public class DataInitializer {
             Individual newIndividual = individualRepo.save(individual);
 
             User user = User.builder()
-                    .individualId(newIndividual.getId())
+                    .individual(newIndividual)
                     .username("admin")
                     .password(passwordEncoder.encode("admin"))
                     .role(RoleName.ROLE_OWNER)
