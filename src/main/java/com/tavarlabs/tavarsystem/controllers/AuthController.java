@@ -7,12 +7,16 @@ import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,6 +42,15 @@ public class AuthController {
                     .token(accessJwt)
                     .expiresIn(864000)
                     .build();
+
+            ResponseCookie accessTokenCookie = ResponseCookie.from("access", accessJwt)
+                    .httpOnly(true)
+                    .path("/")
+                    .sameSite("Lax")
+                    .maxAge(Duration.ofDays(1))
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
 
             return ResponseEntity.ok(authResponse);
         } catch (Exception e) {
