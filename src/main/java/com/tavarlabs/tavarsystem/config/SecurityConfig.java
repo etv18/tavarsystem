@@ -5,6 +5,7 @@ import com.tavarlabs.tavarsystem.security.AuthEntryPoint;
 import com.tavarlabs.tavarsystem.security.JwtAuthenticationFilter;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.service.impl.TavSysUserDetailsService;
+import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +61,9 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorization -> authorization
-                        .requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                        //.requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, AppKeywords.apiUrlPfx + "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, AppKeywords.apiUrlPfx + "/test/**").permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
