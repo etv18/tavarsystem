@@ -48,6 +48,9 @@ public class Individual {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "individual")
+    private User user;
+
     @PrePersist
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();
