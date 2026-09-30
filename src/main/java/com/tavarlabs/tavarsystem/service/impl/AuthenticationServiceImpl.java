@@ -1,10 +1,9 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
+import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.*;
 
@@ -27,6 +28,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
     private final String ACTIVE = "active";
     private final String ACCESS_TOKEN_COOKIE_KEYWORD = "accessToken";
@@ -34,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final String ACCESS_TOKEN = "access";
     private final String REFRESH_TOKEN = "refresh";
     private final Long ACCESS_JWT_EXP_IN_MS = 2000L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 3000L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 3600000L;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -49,19 +51,39 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserDetails validateToken(String accessToken, HttpServletResponse response) {
-        Claims claims = parseJwtToClaims(accessToken);
+    public UserDetails validateToken(String accessToken, String refreshToken, HttpServletResponse response) {
+        Claims accessTknClaims = parseJwtToClaims(accessToken);
 
-        Boolean enabled = claims.get(ACTIVE, Boolean.class);
+        Boolean enabled = accessTknClaims.get(ACTIVE, Boolean.class);
         if(!enabled) {
             throw new DisabledException("Your account is disabled, please contact your IT admin.");
         }
 
         String username = extractUserName(accessToken);
         List<SimpleGrantedAuthority> authorities = extractAuthorities(accessToken);
-        UserDetails user = new org.springframework.security.core.userdetails.User(username, "", authorities);
+        UserDetails user = null;
 
-        // TODO: develop validation for expired token for giving one new to the user
+        if(isTokenExpired(accessToken)) {
+            user = userDetailsService.loadUserByUsername(username);
+
+            if(isTokenExpired(refreshToken)) {
+                //throw new TokenExpired("Your refresh token is expired...");
+                Claims claims = Jwts.parser()
+                        .verifyWith(getSigningKey())
+                        .build()
+                        .parseSignedClaims(refreshToken)
+                        .getPayload();
+
+                System.out.println("Expiration: " + claims.getExpiration());
+                System.out.println("Now: " + new Date());
+            }
+
+            String accessTknType = AppKeywords.accessTkn;
+
+            String newAccessToken = generateToken(user, accessTknType);
+            setTokenOnHttpOnlyCookie(response, accessTknType, newAccessToken);
+        }
+
         return user;
     }
 
@@ -97,8 +119,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         response.addHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString());
     }
 
-    private Key getSigningKey(){
-        byte[] keyBytes = secretKey.getBytes();
+    @Override
+    public boolean isTokenExpired(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return false;
+        } catch (ExpiredJwtException e) {
+            System.out.println("Expired JWT EX");
+            return true;
+        }
+    }
+
+    @Override
+    public void logoutUser(HttpServletResponse response) {
+        /*
+         * This way I delete the cookie which has the jwt which the browser has stored,
+         * so it wouldn't be sent by him automatically anymore in every request as I
+         * set it up in the login method at AuthController class.
+         * */
+        ResponseCookie accessTokenCookie = ResponseCookie.from(AppKeywords.accessTkn, "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(AppKeywords.refreshTkn, "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    }
+
+    private SecretKey getSigningKey(){
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8); //look more info about this why utf_8 and ScretKey class
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -125,10 +183,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private Claims parseJwtToClaims(String token){
         try {
             return Jwts.parser()
-                    .setSigningKey(getSigningKey())
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
