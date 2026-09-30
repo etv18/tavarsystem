@@ -1,22 +1,15 @@
 package com.tavarlabs.tavarsystem.controllers;
 
-import com.tavarlabs.tavarsystem.dtos.auth.AuthResponse;
-import com.tavarlabs.tavarsystem.dtos.auth.LoginRequest;
+import com.tavarlabs.tavarsystem.dtos.auth.DtoAuthResponse;
+import com.tavarlabs.tavarsystem.dtos.auth.DtoLoginRequest;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.Duration;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +20,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest loginRequest,
+            @RequestBody DtoLoginRequest loginRequest,
             HttpServletResponse response
     ){
         try {
@@ -36,25 +29,25 @@ public class AuthController {
                     loginRequest.getPassword()
             );
 
-            String accessJwt = authenticationService.generateToken(userDetails, "access");
+            String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
+            String refreshJwt = authenticationService.generateToken(userDetails, AppKeywords.refreshTkn);
 
-            AuthResponse authResponse = AuthResponse.builder()
-                    .token(accessJwt)
-                    .expiresIn(864000)
+            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, accessJwt);
+            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, refreshJwt);
+
+            DtoAuthResponse authResponse = DtoAuthResponse.builder()
+                    .accessToken(accessJwt)
+                    .refreshToken(refreshJwt)
                     .build();
-
-            ResponseCookie accessTokenCookie = ResponseCookie.from("access", accessJwt)
-                    .httpOnly(true)
-                    .path("/")
-                    .sameSite("Lax")
-                    .maxAge(Duration.ofDays(1))
-                    .build();
-
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
 
             return ResponseEntity.ok(authResponse);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/renew/refresh-token")
+    public ResponseEntity<?> refreshJWT() {
+        return null;
     }
 }
