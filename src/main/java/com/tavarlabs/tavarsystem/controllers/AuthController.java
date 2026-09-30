@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = AppKeywords.apiUrlPfx + "/auth")
@@ -50,4 +52,15 @@ public class AuthController {
     public ResponseEntity<?> refreshJWT() {
         return null;
     }
+
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        authenticationService.logoutUser(response);
+        return ResponseEntity.ok(
+                Map.of("message", "Logged out")
+        );
+    }
+
+
 }
