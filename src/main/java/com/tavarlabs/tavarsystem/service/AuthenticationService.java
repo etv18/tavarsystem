@@ -7,4 +7,5 @@ public interface AuthenticationService {
     UserDetails authenticate(String username, String password);
     UserDetails validateToken(String accessToken, HttpServletResponse response);
     String generateToken(UserDetails userDetails, String tokenType);
+    void setTokenOnHttpOnlyCookie(HttpServletResponse response, String type, String token);
 }

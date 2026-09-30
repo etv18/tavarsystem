@@ -9,6 +9,8 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -80,6 +83,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .expiration( new Date(System.currentTimeMillis() + setJwtExpirationTimeInMs(tokenType)) )
                 .signWith(getSigningKey()) //TODO: ask why it can be done like this
                 .compact();
+    }
+
+    @Override
+    public void setTokenOnHttpOnlyCookie(HttpServletResponse response, String type, String token) {
+        ResponseCookie tokenCookie = ResponseCookie.from(type, token)
+                .httpOnly(true)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(Duration.ofDays(1))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, tokenCookie.toString());
     }
 
     private Key getSigningKey(){
