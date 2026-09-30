@@ -5,6 +5,7 @@ import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,6 +34,17 @@ public class GlobalExceptionHandler {
                 .body(
                         DtoExceptionBody.builder()
                                 .error("TOKEN EXPIRED")
+                                .message(ex.getMessage())
+                );
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<?> handleDisabledException(DisabledException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(
+                        DtoExceptionBody.builder()
+                                .error("DISABLED ACCOUNT")
                                 .message(ex.getMessage())
                 );
     }
