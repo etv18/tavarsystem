@@ -29,10 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         try{
-            String accessToken = extractToken(request, AppKeywords.accessTkn);
 
-            if(accessToken != null) {
-                UserDetails userDetails = authenticationService.validateToken(accessToken, response);
+            String accessToken = extractToken(request, AppKeywords.accessTkn);
+            String refreshToken = extractToken(request, AppKeywords.refreshTkn);
+
+            if(accessToken != null && refreshToken != null) {
+
+                UserDetails userDetails = authenticationService.validateToken(accessToken, refreshToken, response);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
