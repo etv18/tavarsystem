@@ -1,5 +1,7 @@
 package com.tavarlabs.tavarsystem.controllers.global;
 
+import com.tavarlabs.tavarsystem.dtos.exception.DtoExceptionBody;
+import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,10 +18,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
-                        Map.of(
-                                "error", "Invalid credentials pal.",
-                                "message", ex.getMessage()
-                        )
+                        DtoExceptionBody.builder()
+                                .error("INVALID CREDENTIALS")
+                                .message(ex.getMessage())
+
                 );
     }
+
+
+    @ExceptionHandler(TokenExpired.class)
+    public ResponseEntity<?> handleTokenExpired(TokenExpired ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        DtoExceptionBody.builder()
+                                .error("TOKEN EXPIRED")
+                                .message(ex.getMessage())
+                );
+    }
+
 }
