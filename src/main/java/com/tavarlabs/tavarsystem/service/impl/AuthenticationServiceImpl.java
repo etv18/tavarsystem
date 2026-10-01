@@ -31,10 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserDetailsService userDetailsService;
 
     private final String ACTIVE = "active";
-    private final String ACCESS_TOKEN_COOKIE_KEYWORD = "accessToken";
-    private final String REFRESH_TOKEN_COOKIE_KEYWORD = "refreshToken";
     private final String ACCESS_TOKEN = "access";
-    private final String REFRESH_TOKEN = "refresh";
     private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3L;
     private final Long REFRESH_JWT_EXP_IN_MS = 3600000L;
 
@@ -163,7 +160,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private Long setJwtExpirationTimeInMs(String tokenType){
-        if(tokenType.equalsIgnoreCase(ACCESS_TOKEN)){
+        if(tokenType.equalsIgnoreCase(AppKeywords.accessTkn)){
             return ACCESS_JWT_EXP_IN_MS;
         }
         return REFRESH_JWT_EXP_IN_MS;
