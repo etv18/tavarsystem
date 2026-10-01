@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -22,6 +23,11 @@ public class AppTestController {
 
     @GetMapping("/restricted")
     public ResponseEntity<?> viewRestricted(){
-        return ResponseEntity.ok(Map.of("message", "Only nice people can see it..."));
+        return ResponseEntity.ok(
+                Map.of(
+                "message", "Only nice people can see it...",
+                "timestamp", LocalDateTime.now()
+                )
+        );
     }
 }
