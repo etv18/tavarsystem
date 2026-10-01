@@ -18,21 +18,29 @@ public class AppTestController {
 
     @GetMapping("/general")
     public ResponseEntity<?> viewGeneral(){
-        return ResponseEntity.ok(
-                Map.of(
-                        "message", "Open to the public",
-                        "timestamp", LocalDateTime.now()
-                )
-        );
+       try{
+           return ResponseEntity.ok(
+                   Map.of(
+                           "message", "Open to the public",
+                           "timestamp", LocalDateTime.now()
+                   )
+           );
+       } catch (Exception e) {
+           throw new RuntimeException(e);
+       }
     }
 
     @GetMapping("/restricted")
     public ResponseEntity<?> viewRestricted(){
-        return ResponseEntity.ok(
-                Map.of(
-                "message", "Only nice people can see it...",
-                "timestamp", LocalDateTime.now()
-                )
-        );
+        try {
+            return ResponseEntity.ok(
+                    Map.of(
+                            "message", "Only nice people can see it...",
+                            "timestamp", LocalDateTime.now()
+                    )
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
