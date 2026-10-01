@@ -18,7 +18,12 @@ public class AppTestController {
 
     @GetMapping("/general")
     public ResponseEntity<?> viewGeneral(){
-        return ResponseEntity.ok(Map.of("message", "Open to the public"));
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Open to the public",
+                        "timestamp", LocalDateTime.now()
+                )
+        );
     }
 
     @GetMapping("/restricted")
