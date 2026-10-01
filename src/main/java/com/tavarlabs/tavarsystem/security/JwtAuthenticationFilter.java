@@ -28,12 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        final boolean authRequest = request.getRequestURI().startsWith(AppKeywords.apiUrlPfx + "/auth/");
+
         try{
 
             String accessToken = extractToken(request, AppKeywords.accessTkn);
             String refreshToken = extractToken(request, AppKeywords.refreshTkn);
 
-            if(accessToken != null && refreshToken != null) {
+            if(accessToken != null && refreshToken != null && !authRequest) {
 
                 UserDetails userDetails = authenticationService.validateToken(accessToken, refreshToken, response);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
