@@ -9,6 +9,6 @@ public interface AuthenticationService {
     String generateToken(UserDetails userDetails, String tokenType);
     void setTokenOnHttpOnlyCookie(HttpServletResponse response, String type, String token);
     boolean isTokenExpired(String token);
-    void logoutUser(HttpServletResponse response);
+    void clearTokensFromHttpOnlyCookies(HttpServletResponse response);
 
 }

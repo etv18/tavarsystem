@@ -35,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final String REFRESH_TOKEN_COOKIE_KEYWORD = "refreshToken";
     private final String ACCESS_TOKEN = "access";
     private final String REFRESH_TOKEN = "refresh";
-    private final Long ACCESS_JWT_EXP_IN_MS = 2000L;
+    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3L;
     private final Long REFRESH_JWT_EXP_IN_MS = 3600000L;
 
     @Value("${jwt.secret}")
@@ -61,27 +61,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String username = extractUserName(accessToken);
         List<SimpleGrantedAuthority> authorities = extractAuthorities(accessToken);
-        UserDetails user = null;
+        UserDetails user = userDetailsService.loadUserByUsername(username);
 
         if(isTokenExpired(accessToken)) {
-            user = userDetailsService.loadUserByUsername(username);
 
             if(isTokenExpired(refreshToken)) {
-                //throw new TokenExpired("Your refresh token is expired...");
-                Claims claims = Jwts.parser()
-                        .verifyWith(getSigningKey())
-                        .build()
-                        .parseSignedClaims(refreshToken)
-                        .getPayload();
-
-                System.out.println("Expiration: " + claims.getExpiration());
-                System.out.println("Now: " + new Date());
+                throw new TokenExpired("Your refresh token is expired...");
+//                Claims claims = Jwts.parser()
+//                        .verifyWith(getSigningKey())
+//                        .build()
+//                        .parseSignedClaims(refreshToken)
+//                        .getPayload();
+//
+//                System.out.println("Expiration: " + claims.getExpiration());
+//                System.out.println("Now: " + new Date());
             }
 
             String accessTknType = AppKeywords.accessTkn;
 
             String newAccessToken = generateToken(user, accessTknType);
             setTokenOnHttpOnlyCookie(response, accessTknType, newAccessToken);
+            System.out.println("---------------> New access token assigned !");
         }
 
         return user;
@@ -128,13 +128,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .parseSignedClaims(token);
             return false;
         } catch (ExpiredJwtException e) {
-            System.out.println("Expired JWT EX");
+            System.out.println("Expired: type=" + e.getClaims().get("type")
+                    + ", exp=" + e.getClaims().getExpiration()
+                    + ", msg=" + e.getMessage());
             return true;
         }
     }
 
     @Override
-    public void logoutUser(HttpServletResponse response) {
+    public void clearTokensFromHttpOnlyCookies(HttpServletResponse response) {
         /*
          * This way I delete the cookie which has the jwt which the browser has stored,
          * so it wouldn't be sent by him automatically anymore in every request as I
