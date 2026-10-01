@@ -33,7 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final String ACTIVE = "active";
     private final String ACCESS_TOKEN = "access";
     private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 3600000L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 6L;
 
     @Value("${jwt.secret}")
     private String secretKey;
