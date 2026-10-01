@@ -34,6 +34,8 @@ public class AuthController {
             String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
             String refreshJwt = authenticationService.generateToken(userDetails, AppKeywords.refreshTkn);
 
+            authenticationService.clearTokensFromHttpOnlyCookies(response);
+
             authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, accessJwt);
             authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, refreshJwt);
 
@@ -56,7 +58,7 @@ public class AuthController {
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        authenticationService.logoutUser(response);
+        authenticationService.clearTokensFromHttpOnlyCookies(response);
         return ResponseEntity.ok(
                 Map.of("message", "Logged out")
         );
