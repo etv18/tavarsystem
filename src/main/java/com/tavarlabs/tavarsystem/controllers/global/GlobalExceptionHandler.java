@@ -9,8 +9,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,6 +20,7 @@ public class GlobalExceptionHandler {
                         DtoExceptionBody.builder()
                                 .error("INVALID CREDENTIALS")
                                 .message(ex.getMessage())
+                                .build()
 
                 );
     }
@@ -35,6 +34,7 @@ public class GlobalExceptionHandler {
                         DtoExceptionBody.builder()
                                 .error("TOKEN EXPIRED")
                                 .message(ex.getMessage())
+                                .build()
                 );
     }
 
@@ -46,6 +46,7 @@ public class GlobalExceptionHandler {
                         DtoExceptionBody.builder()
                                 .error("DISABLED ACCOUNT")
                                 .message(ex.getMessage())
+                                .build()
                 );
     }
 
