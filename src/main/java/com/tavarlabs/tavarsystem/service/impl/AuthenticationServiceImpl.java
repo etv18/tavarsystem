@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
+import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import io.jsonwebtoken.*;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final String ACTIVE = "active";
     private final String ACCESS_TOKEN = "access";
     private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 6L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 60L;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -152,6 +154,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    }
+
+    @Override
+    public Optional<TavSysUserDetails> currentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof TavSysUserDetails user){
+            return Optional.of(user);
+        }
+        return Optional.empty();
     }
 
     private SecretKey getSigningKey(){
