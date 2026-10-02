@@ -1,5 +1,6 @@
 package com.tavarlabs.tavarsystem.security;
 
+import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.FilterChain;
@@ -9,10 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 
@@ -21,6 +24,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
+    private final HandlerExceptionResolver resolver;
 
     @Override
     protected void doFilterInternal(
@@ -44,11 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                if(userDetails instanceof TavSysUserDetails) {
-                    request.setAttribute("userId", ((TavSysUserDetails) userDetails).getId());
-                }
             }
+        } catch (TokenExpired | DisabledException ex) {
+            resolver.resolveException(request, response, null, ex);
+            return; // TODO: ASK ABOUT THIS
         } catch (Exception e) {
             // log the exception
             log.warn("Received invalid auth token");
