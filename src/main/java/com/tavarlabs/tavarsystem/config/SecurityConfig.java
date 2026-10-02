@@ -7,6 +7,7 @@ import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.service.impl.TavSysUserDetailsService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableMethodSecurity
@@ -30,8 +32,11 @@ public class SecurityConfig {
     public AuthEntryPoint authEntryPoint() { return new AuthEntryPoint(); }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter(AuthenticationService authenticationService) {
-        return new JwtAuthenticationFilter(authenticationService);
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+            AuthenticationService authenticationService,
+            @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver
+    ) {
+        return new JwtAuthenticationFilter(authenticationService, resolver);
     }
 
     @Bean
@@ -61,8 +66,8 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorization -> authorization
-                        //.requestMatchers(HttpMethod.GET, "/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, AppKeywords.apiUrlPfx + "/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, AppKeywords.apiUrlPfx + "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, AppKeywords.apiUrlPfx + "/auth/logout").permitAll()
                         .requestMatchers(HttpMethod.GET, AppKeywords.apiUrlPfx + "/test/general").permitAll()
                         .anyRequest().authenticated()
                 )
