@@ -59,8 +59,20 @@ public class AuthController {
     }
 
     @GetMapping("/renew/refresh-token")
-    public ResponseEntity<?> renewRefreshTkn() {
-        return null;
+    public ResponseEntity<?> renewRefreshTkn(HttpServletRequest request, HttpServletResponse response) {
+        try{
+            authenticationService.renewRefreshToken(request, response);
+
+            return ResponseEntity.ok(
+                    DtoRenewedToken.builder()
+                            .type(AppKeywords.refreshTkn.toUpperCase())
+                            .message("Token renewed.")
+                            .timestamp(LocalDateTime.now())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/renew/access-token")
