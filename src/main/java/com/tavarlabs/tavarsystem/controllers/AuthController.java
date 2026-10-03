@@ -70,6 +70,7 @@ public class AuthController {
 
             return ResponseEntity.ok(
                     DtoRenewedToken.builder()
+                            .type(AppKeywords.accessTkn.toUpperCase())
                             .message("Token renewed.")
                             .timestamp(LocalDateTime.now())
                             .build()
