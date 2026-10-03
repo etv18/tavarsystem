@@ -33,7 +33,7 @@ public class Individual {
     @Column(name = "doc_number", nullable = false, length = 50)
     private String documentNumber;
 
-    @Column(name = "email", nullable = true, length = 120)
+    @Column(name = "email", length = 120)
     private String email;
 
     @Column(name = "telephone", nullable = false, length = 30)
