@@ -67,7 +67,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(authorization -> authorization
                         .requestMatchers(HttpMethod.POST, AppKeywords.apiUrlPfx + "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, AppKeywords.apiUrlPfx + "/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, AppKeywords.apiUrlPfx + "/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, AppKeywords.apiUrlPfx + "/test/general").permitAll()
                         .anyRequest().authenticated()
                 )
