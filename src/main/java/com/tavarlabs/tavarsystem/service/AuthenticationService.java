@@ -15,4 +15,6 @@ public interface AuthenticationService {
     boolean isTokenExpired(String token);
     void clearTokensFromHttpOnlyCookies(HttpServletResponse response);
     void renewAccessToken(HttpServletRequest request, HttpServletResponse response);
+    void renewRefreshToken(HttpServletRequest request, HttpServletResponse response);
+
 }

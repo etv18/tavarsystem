@@ -1,9 +1,9 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
-import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import com.tavarlabs.tavarsystem.utils.AppExceptionMsg;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
@@ -18,7 +18,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -36,8 +35,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserDetailsService userDetailsService;
 
     private final String ACTIVE = "active";
-    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 10L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 15L;
+    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 5L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 13L;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -53,23 +52,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDetails validateToken(String accessToken, String refreshToken, HttpServletResponse response) {
-        Claims accessTknClaims = parseJwtToClaims(accessToken);
-
-        Boolean enabled = accessTknClaims.get(ACTIVE, Boolean.class);
-        if(!enabled) {
-            throw new DisabledException("Your account is disabled, please contact your IT admin.");
-        }
+        Claims accessTknClaims = parseJwtToClaims(accessToken); // TODO: ASK IF THERE IS CHEKING THE JWT SIGN
 
         if(isTokenExpired(refreshToken)) {
-            throw new TokenExpired(AppKeywords.refreshTkn, "Your refresh token is expired...");
+            throw new TokenExpired(AppKeywords.refreshTkn, AppExceptionMsg.refreshTokenExpired);
         }
+
         if(isTokenExpired(accessToken)) {
-            throw new TokenExpired(AppKeywords.accessTkn, "Your access token is expired...");
+            throw new TokenExpired(AppKeywords.accessTkn, AppExceptionMsg.accessTokenExpired);
         }
 
         String username = extractUserName(accessToken);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
 
-        return userDetailsService.loadUserByUsername(username);
+        if(!user.isEnabled()) {
+            throw new DisabledException(AppExceptionMsg.disabledException);
+        }
+
+        return user;
     }
 
     @Override
@@ -153,7 +153,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String refreshTkn = (refreshCk != null) ? refreshCk.getValue() : "";
 
         if(isTokenExpired(refreshTkn)) {
-            throw new TokenExpired(AppKeywords.refreshTkn, "Your refresh token is expired...");
+            throw new TokenExpired(AppKeywords.refreshTkn, AppExceptionMsg.refreshTokenExpired);
         }
 
         String username = extractUserName(accessTkn);
@@ -161,6 +161,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String newToken = generateToken(user, AppKeywords.accessTkn);
         setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, newToken);
+    }
+
+    @Override
+    public void renewRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+        Cookie refreshCk = WebUtils.getCookie(request, AppKeywords.refreshTkn);
+        String refreshTkn = (refreshCk != null) ? refreshCk.getValue() : "";
+
+        String username = extractUserName(refreshTkn);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        if(!user.isEnabled()){
+            throw new DisabledException(AppExceptionMsg.disabledException);
+        }
+
+        String newToken = generateToken(user, AppKeywords.refreshTkn);
+        setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, newToken);
     }
 
     private SecretKey getSigningKey(){
