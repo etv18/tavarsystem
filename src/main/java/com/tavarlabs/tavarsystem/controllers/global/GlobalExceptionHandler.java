@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.controllers.global;
 
 import com.tavarlabs.tavarsystem.dtos.exception.DtoExceptionBody;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
+import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,11 +29,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(TokenExpired.class)
     public ResponseEntity<?> handleTokenExpired(TokenExpired ex) {
+        String code = AppKeywords.accessTkn.equals(ex.getTokenType())
+                ? "ACCESS_TOKEN_EXPIRED"
+                : "REFRESH_TOKEN_EXPIRED";
+
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
                         DtoExceptionBody.builder()
-                                .error("TOKEN EXPIRED")
+                                .error(code)
                                 .message(ex.getMessage())
                                 .build()
                 );
