@@ -52,7 +52,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDetails validateToken(String accessToken, String refreshToken, HttpServletResponse response) {
-        Claims accessTknClaims = parseJwtToClaims(accessToken); // TODO: ASK IF THERE IS CHEKING THE JWT SIGN
 
         if(isTokenExpired(refreshToken)) {
             throw new TokenExpired(AppKeywords.refreshTkn, AppExceptionMsg.refreshTokenExpired);
