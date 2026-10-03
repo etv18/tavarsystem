@@ -5,6 +5,7 @@ import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import com.tavarlabs.tavarsystem.utils.AppExceptionMsg;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SignatureException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -105,20 +106,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public boolean isTokenExpired(String token) {
+        /*
+         * Verifies the token's signature first, then its expiration.
+         * - Tampered or wrongly signed token -> SignatureException (a JwtException)
+         * - Valid signature but past exp     -> ExpiredJwtException
+         * - Null/blank string                -> IllegalArgumentException
+         */
         try {
             Jwts.parser()
                     .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
             return false;
+
+        } catch (SignatureException ex) {
+            throw new SignatureException(AppExceptionMsg.signatureException);
         } catch (ExpiredJwtException e) {
             System.out.println(
                     "Expired: type=" + e.getClaims().get("type")
                             + ", exp=" + e.getClaims().getExpiration()
                             + ", msg=" + e.getMessage()
             );
-            return true;
         }
+
+        return true;
     }
 
     @Override
