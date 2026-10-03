@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.controllers;
 
 import com.tavarlabs.tavarsystem.dtos.auth.DtoAuthResponse;
 import com.tavarlabs.tavarsystem.dtos.auth.DtoLoginRequest;
+import com.tavarlabs.tavarsystem.dtos.auth.DtoRenewedToken;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
 import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -57,8 +59,24 @@ public class AuthController {
     }
 
     @GetMapping("/renew/refresh-token")
-    public ResponseEntity<?> refreshJWT() {
+    public ResponseEntity<?> renewRefreshTkn() {
         return null;
+    }
+
+    @GetMapping("/renew/access-token")
+    public ResponseEntity<?> renewAccessTkn(HttpServletRequest request, HttpServletResponse response) {
+        try{
+            authenticationService.renewAccessToken(request, response);
+
+            return ResponseEntity.ok(
+                    DtoRenewedToken.builder()
+                            .message("Token renewed.")
+                            .timestamp(LocalDateTime.now())
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
