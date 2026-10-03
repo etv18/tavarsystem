@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class DtoRenewedToken {
+    private String type;
     private String message;
     private LocalDateTime timestamp;
 }
