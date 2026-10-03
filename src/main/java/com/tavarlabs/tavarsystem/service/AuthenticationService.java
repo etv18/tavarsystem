@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.service;
 
 import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,5 +14,5 @@ public interface AuthenticationService {
     void setTokenOnHttpOnlyCookie(HttpServletResponse response, String type, String token);
     boolean isTokenExpired(String token);
     void clearTokensFromHttpOnlyCookies(HttpServletResponse response);
-    Optional<TavSysUserDetails> currentUser();
+    void renewAccessToken(HttpServletRequest request, HttpServletResponse response);
 }

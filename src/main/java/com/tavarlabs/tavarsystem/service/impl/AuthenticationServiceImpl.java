@@ -6,6 +6,8 @@ import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -33,9 +36,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserDetailsService userDetailsService;
 
     private final String ACTIVE = "active";
-    private final String ACCESS_TOKEN = "access";
-    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 60L;
+    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 10L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 15L;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -58,32 +60,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new DisabledException("Your account is disabled, please contact your IT admin.");
         }
 
-        String username = extractUserName(accessToken);
-        List<SimpleGrantedAuthority> authorities = extractAuthorities(accessToken);
-        UserDetails user = userDetailsService.loadUserByUsername(username);
-
+        if(isTokenExpired(refreshToken)) {
+            throw new TokenExpired(AppKeywords.refreshTkn, "Your refresh token is expired...");
+        }
         if(isTokenExpired(accessToken)) {
-
-            if(isTokenExpired(refreshToken)) {
-                throw new TokenExpired("Your refresh token is expired...");
-//                Claims claims = Jwts.parser()
-//                        .verifyWith(getSigningKey())
-//                        .build()
-//                        .parseSignedClaims(refreshToken)
-//                        .getPayload();
-//
-//                System.out.println("Expiration: " + claims.getExpiration());
-//                System.out.println("Now: " + new Date());
-            }
-
-            String accessTknType = AppKeywords.accessTkn;
-
-            String newAccessToken = generateToken(user, accessTknType);
-            setTokenOnHttpOnlyCookie(response, accessTknType, newAccessToken);
-            System.out.println("---------------> New access token assigned !");
+            throw new TokenExpired(AppKeywords.accessTkn, "Your access token is expired...");
         }
 
-        return user;
+        String username = extractUserName(accessToken);
+
+        return userDetailsService.loadUserByUsername(username);
     }
 
     @Override
@@ -127,9 +113,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .parseSignedClaims(token);
             return false;
         } catch (ExpiredJwtException e) {
-            System.out.println("Expired: type=" + e.getClaims().get("type")
-                    + ", exp=" + e.getClaims().getExpiration()
-                    + ", msg=" + e.getMessage());
+            System.out.println(
+                    "Expired: type=" + e.getClaims().get("type")
+                            + ", exp=" + e.getClaims().getExpiration()
+                            + ", msg=" + e.getMessage()
+            );
             return true;
         }
     }
@@ -157,12 +145,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Optional<TavSysUserDetails> currentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof TavSysUserDetails user){
-            return Optional.of(user);
+    public void renewAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        Cookie accessCk = WebUtils.getCookie(request, AppKeywords.accessTkn);
+        Cookie refreshCk = WebUtils.getCookie(request, AppKeywords.refreshTkn);
+
+        String accessTkn = (accessCk != null) ? accessCk.getValue() : "";
+        String refreshTkn = (refreshCk != null) ? refreshCk.getValue() : "";
+
+        if(isTokenExpired(refreshTkn)) {
+            throw new TokenExpired(AppKeywords.refreshTkn, "Your refresh token is expired...");
         }
-        return Optional.empty();
+
+        String username = extractUserName(accessTkn);
+        UserDetails user = userDetailsService.loadUserByUsername(username);
+
+        String newToken = generateToken(user, AppKeywords.accessTkn);
+        setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, newToken);
     }
 
     private SecretKey getSigningKey(){
