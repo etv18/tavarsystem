@@ -35,7 +35,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    private final String ACTIVE = "active";
     private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 5L;
     private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 13L;
 
@@ -82,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .toList()
         );
         claims.put("type", tokenType);
-        claims.put(ACTIVE, userDetails.isEnabled());
+        claims.put("active", userDetails.isEnabled());
         return Jwts.builder()
                 .claims(claims)
                 .subject(userDetails.getUsername())
