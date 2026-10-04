@@ -35,8 +35,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 5L;
-    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 13L;
+    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 60L * 5L;
+    private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 3600L * 24L * 5L;
 
     @Value("${jwt.secret}")
     private String secretKey;
