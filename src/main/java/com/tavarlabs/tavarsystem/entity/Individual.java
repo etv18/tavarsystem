@@ -1,5 +1,6 @@
 package com.tavarlabs.tavarsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tavarlabs.tavarsystem.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,7 @@ public class Individual {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "individual")
     private User user;
 
