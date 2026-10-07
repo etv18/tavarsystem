@@ -37,4 +37,12 @@ public class IndividualController {
                 .toList();
         return ResponseEntity.ok(individualsDto);
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateIndividual(
+            @RequestBody IndividualDto requestDto
+    ) {
+        Individual individual =  individualService.updateIndividual(requestDto);
+        return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+    }
 }
