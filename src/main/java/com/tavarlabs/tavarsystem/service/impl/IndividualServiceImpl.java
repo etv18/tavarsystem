@@ -1,6 +1,6 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
-import com.tavarlabs.tavarsystem.dtos.individual.DtoCreateIndividualRequest;
+import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.repository.IndividualRepository;
 import com.tavarlabs.tavarsystem.service.IndividualService;
@@ -15,7 +15,7 @@ public class IndividualServiceImpl implements IndividualService {
     private final IndividualRepository individualRepo;
 
     @Override
-    public Individual createIndividual(DtoCreateIndividualRequest dto) {
+    public Individual createIndividual(CreateIndividualRequestDto dto) {
         Individual individual = Individual.builder()
                 .firstName(dto.getFirstName().toUpperCase())
                 .lastName(dto.getLastName().toUpperCase())

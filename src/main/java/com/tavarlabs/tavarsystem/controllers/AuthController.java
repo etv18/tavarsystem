@@ -1,10 +1,9 @@
 package com.tavarlabs.tavarsystem.controllers;
 
-import com.tavarlabs.tavarsystem.dtos.auth.DtoAuthResponse;
-import com.tavarlabs.tavarsystem.dtos.auth.DtoLoginRequest;
-import com.tavarlabs.tavarsystem.dtos.auth.DtoRenewedToken;
+import com.tavarlabs.tavarsystem.dtos.auth.AuthResponseDto;
+import com.tavarlabs.tavarsystem.dtos.auth.LoginRequestDto;
+import com.tavarlabs.tavarsystem.dtos.auth.RenewedTokenDto;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
-import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.Cookie;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody DtoLoginRequest loginRequest,
+            @RequestBody LoginRequestDto loginRequest,
             HttpServletResponse response
     ){
         try {
@@ -47,7 +44,7 @@ public class AuthController {
             authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, accessJwt);
             authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, refreshJwt);
 
-            DtoAuthResponse authResponse = DtoAuthResponse.builder()
+            AuthResponseDto authResponse = AuthResponseDto.builder()
                     .accessToken(accessJwt)
                     .refreshToken(refreshJwt)
                     .build();
@@ -64,7 +61,7 @@ public class AuthController {
             authenticationService.renewRefreshToken(request, response);
 
             return ResponseEntity.ok(
-                    DtoRenewedToken.builder()
+                    RenewedTokenDto.builder()
                             .type(AppKeywords.refreshTkn.toUpperCase())
                             .message("Token renewed.")
                             .timestamp(LocalDateTime.now())
@@ -81,7 +78,7 @@ public class AuthController {
             authenticationService.renewAccessToken(request, response);
 
             return ResponseEntity.ok(
-                    DtoRenewedToken.builder()
+                    RenewedTokenDto.builder()
                             .type(AppKeywords.accessTkn.toUpperCase())
                             .message("Token renewed.")
                             .timestamp(LocalDateTime.now())

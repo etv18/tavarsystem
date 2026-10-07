@@ -1,6 +1,6 @@
 package com.tavarlabs.tavarsystem.controllers.global;
 
-import com.tavarlabs.tavarsystem.dtos.exception.DtoExceptionBody;
+import com.tavarlabs.tavarsystem.dtos.exception.ExceptionBodyDto;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
-                        DtoExceptionBody.builder()
+                        ExceptionBodyDto.builder()
                                 .error("INVALID CREDENTIALS")
                                 .message(ex.getMessage())
                                 .build()
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
-                        DtoExceptionBody.builder()
+                        ExceptionBodyDto.builder()
                                 .error(code)
                                 .message(ex.getMessage())
                                 .build()
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(
-                        DtoExceptionBody.builder()
+                        ExceptionBodyDto.builder()
                                 .error("DISABLED ACCOUNT")
                                 .message(ex.getMessage())
                                 .build()

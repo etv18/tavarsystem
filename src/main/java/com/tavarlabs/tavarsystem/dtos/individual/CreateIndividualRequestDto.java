@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DtoCreateIndividualRequest {
+public class CreateIndividualRequestDto {
     private String firstName;
     private String lastName;
     private DocumentType documentType;

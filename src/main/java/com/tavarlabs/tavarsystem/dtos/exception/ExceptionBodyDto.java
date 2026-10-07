@@ -1,4 +1,5 @@
-package com.tavarlabs.tavarsystem.dtos.auth;
+package com.tavarlabs.tavarsystem.dtos.exception;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DtoAuthResponse {
-    private String accessToken;
-    private String refreshToken;
+public class ExceptionBodyDto {
+    String error;
+    String message;
 }
-

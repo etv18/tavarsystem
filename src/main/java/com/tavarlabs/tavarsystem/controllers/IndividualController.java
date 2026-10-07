@@ -1,6 +1,6 @@
 package com.tavarlabs.tavarsystem.controllers;
 
-import com.tavarlabs.tavarsystem.dtos.individual.DtoCreateIndividualRequest;
+import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
@@ -18,7 +18,7 @@ public class IndividualController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createIndividual(
-            @RequestBody DtoCreateIndividualRequest requestDto
+            @RequestBody CreateIndividualRequestDto requestDto
     ) {
         Individual individual =  individualService.createIndividual(requestDto);
         return ResponseEntity.ok(individual);
