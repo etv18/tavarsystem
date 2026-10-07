@@ -1,7 +1,7 @@
 package com.tavarlabs.tavarsystem.controllers;
 
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
-import com.tavarlabs.tavarsystem.dtos.individual.IndividualResponseDto;
+import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.mappers.IndividualMapper;
 import com.tavarlabs.tavarsystem.service.IndividualService;
@@ -30,7 +30,7 @@ public class IndividualController {
     @GetMapping("/all")
     public ResponseEntity<?> getAll(){
         List<Individual> individuals = individualService.getAllIndividuals();
-        List<IndividualResponseDto> individualsDto = individuals.stream()
+        List<IndividualDto> individualsDto = individuals.stream()
                 .map(indvd -> {
                     return individualMapper.toResponseDto(indvd);
                 })
