@@ -49,7 +49,6 @@ public class Individual {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @JsonIgnore
     @OneToOne(mappedBy = "individual")
     private User user;
 
