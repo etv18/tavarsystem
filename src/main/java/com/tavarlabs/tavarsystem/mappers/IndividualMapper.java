@@ -8,6 +8,12 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface IndividualMapper {
+
+    /*
+     * Explicit mapping "delete -> deleted" to avoid errors between Lombok and MapStruct
+     * when mapping objects
+     * */
+    @Mapping(source="deleted", target = "deleted") // NEEDED: ** READ THE NOTE ABOVE**
     @Mapping(source="user.id", target = "userId")
     IndividualDto toResponseDto(Individual individual);
 }
