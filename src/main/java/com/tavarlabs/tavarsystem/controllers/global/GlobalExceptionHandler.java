@@ -3,6 +3,7 @@ package com.tavarlabs.tavarsystem.controllers.global;
 import com.tavarlabs.tavarsystem.dtos.exception.ExceptionBodyDto;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -50,6 +51,18 @@ public class GlobalExceptionHandler {
                 .body(
                         ExceptionBodyDto.builder()
                                 .error("DISABLED ACCOUNT")
+                                .message(ex.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(
+                        ExceptionBodyDto.builder()
+                                .error("RECORD NOT FOUND")
                                 .message(ex.getMessage())
                                 .build()
                 );
