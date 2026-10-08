@@ -12,4 +12,5 @@ public interface IndividualService {
     List<Individual> getAllIndividuals();
     Individual updateIndividual(IndividualDto dto);
     Individual getSingleIndividual(String publicId);
+    void deleteIndividual(String publicId);
 }

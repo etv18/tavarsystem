@@ -8,6 +8,7 @@ import com.tavarlabs.tavarsystem.service.IndividualService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -84,10 +85,18 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Override
     public Individual getSingleIndividual(String publicId) {
-        return individualRepo.findById(UUID.fromString(publicId))
-                .orElseThrow(() -> new EntityNotFoundException(
+        return individualRepo.findUndeletedByPublicId(UUID.fromString(publicId))
+                .orElseThrow(() -> new EntityNotFoundException( // TODO: ADD THIS CLASS TO GLOBAL ADVICER
                         "User with this id was not found: " + publicId
                 ));
+    }
+
+    @Transactional
+    @Override
+    public void deleteIndividual(String publicId) {
+        Individual individual = getSingleIndividual(publicId);
+        individual.setDeleted(true);
+        individualRepo.save(individual);
     }
 
     private boolean differentStrings(String currentVal, String newVal){
