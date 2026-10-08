@@ -45,4 +45,10 @@ public class IndividualController {
         Individual individual =  individualService.updateIndividual(requestDto);
         return ResponseEntity.ok(individualMapper.toResponseDto(individual));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getSingleIndividual(@PathVariable("id") String publicId){
+        Individual individual = individualService.getSingleIndividual(publicId);
+        return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+    }
 }
