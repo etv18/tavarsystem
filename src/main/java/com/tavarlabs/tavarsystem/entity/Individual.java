@@ -49,6 +49,9 @@ public class Individual {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @OneToOne(mappedBy = "individual")
     private User user;
 

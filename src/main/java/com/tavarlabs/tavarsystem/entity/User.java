@@ -31,7 +31,11 @@ public class User {
     @Column(nullable = false)
     private RoleName role;
 
+    @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
