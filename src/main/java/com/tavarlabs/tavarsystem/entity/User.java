@@ -35,7 +35,7 @@ public class User {
     private boolean isActive = false;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
