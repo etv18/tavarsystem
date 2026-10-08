@@ -82,6 +82,14 @@ public class IndividualServiceImpl implements IndividualService {
         return individualRepo.save(currentIndi);
     }
 
+    @Override
+    public Individual getSingleIndividual(String publicId) {
+        return individualRepo.findById(UUID.fromString(publicId))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with this id was not found: " + publicId
+                ));
+    }
+
     private boolean differentStrings(String currentVal, String newVal){
         if(currentVal == null || newVal == null) return true;
         return !currentVal.equalsIgnoreCase(newVal);
