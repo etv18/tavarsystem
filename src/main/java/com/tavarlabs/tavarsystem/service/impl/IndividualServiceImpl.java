@@ -86,7 +86,7 @@ public class IndividualServiceImpl implements IndividualService {
     @Override
     public Individual getSingleIndividual(String publicId) {
         return individualRepo.findUndeletedByPublicId(UUID.fromString(publicId))
-                .orElseThrow(() -> new EntityNotFoundException( // TODO: ADD THIS CLASS TO GLOBAL ADVICER
+                .orElseThrow(() -> new EntityNotFoundException(
                         "User with this id was not found: " + publicId
                 ));
     }
