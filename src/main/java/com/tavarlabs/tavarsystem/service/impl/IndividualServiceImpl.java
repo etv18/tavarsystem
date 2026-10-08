@@ -77,6 +77,8 @@ public class IndividualServiceImpl implements IndividualService {
             currentIndi.setAddress(dto.getAddress().toUpperCase());
         }
 
+        // TODO: ADD statement for updating user obj
+
         return individualRepo.save(currentIndi);
     }
 
