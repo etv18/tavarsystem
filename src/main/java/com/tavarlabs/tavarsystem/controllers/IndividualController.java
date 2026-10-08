@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,5 +51,12 @@ public class IndividualController {
     public ResponseEntity<?> getSingleIndividual(@PathVariable("id") String publicId){
         Individual individual = individualService.getSingleIndividual(publicId);
         return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteIndividual(@PathVariable("id") String publicId){
+        individualService.deleteIndividual(publicId);
+        return ResponseEntity.ok(Map.of("message", "Individual deleted successfully."));
     }
 }
