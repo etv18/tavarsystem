@@ -19,5 +19,6 @@ public class IndividualDto {
     private String email;
     private String telephone;
     private String address;
+    private boolean deleted;
     private String userId;
 }
