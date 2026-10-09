@@ -16,5 +16,5 @@ public class CreateUserRequestDto {
     private String username;
     private String password;
     private RoleName roleName;
-    private UUID individualId;
+    private String individualId;
 }
