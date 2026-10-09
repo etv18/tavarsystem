@@ -43,10 +43,7 @@ public class IndividualServiceImpl implements IndividualService {
             throw new IllegalArgumentException("You must provide full info about the user you want to update.");
         }
 
-        Individual currentIndi = individualRepo.findById(UUID.fromString(dto.getId()))
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "User with this id was not found: " + dto.getId()
-                ));
+        Individual currentIndi = getSingleIndividual(dto.getId());
 
         if(differentStrings(currentIndi.getFirstName(), dto.getFirstName())){
             currentIndi.setFirstName(dto.getFirstName().toUpperCase());
