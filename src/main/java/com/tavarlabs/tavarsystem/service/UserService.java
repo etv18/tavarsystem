@@ -3,6 +3,9 @@ package com.tavarlabs.tavarsystem.service;
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.entity.User;
 
-public interface AppUserServices {
-    User createUser(CreateUserRequestDto userRequest);
+import java.util.List;
+
+public interface UserService {
+    User createUser(CreateUserRequestDto dto);
+    List<User> getAll();
 }
