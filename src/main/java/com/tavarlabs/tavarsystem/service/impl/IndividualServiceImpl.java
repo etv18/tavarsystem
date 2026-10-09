@@ -40,7 +40,7 @@ public class IndividualServiceImpl implements IndividualService {
     @Override
     public Individual updateIndividual(IndividualDto dto) {
         if(dto == null) {
-            throw new IllegalArgumentException("You must provide full info about the user you want to update.");
+            throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
         Individual currentIndi = getSingleIndividual(dto.getId());
