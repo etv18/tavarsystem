@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
+import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
 import com.tavarlabs.tavarsystem.service.IndividualService;
@@ -32,6 +33,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         return userRepo.findAll();
+    }
+
+    @Override
+    public User updateUser(UserDto dto) {
+        if(dto == null) {
+            throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
+        }
+
+        User currentUser = null; // TODO: ADD a method from the repo which allows to get not deleted users
+
+        return null;
     }
 
 }
