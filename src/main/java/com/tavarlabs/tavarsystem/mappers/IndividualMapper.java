@@ -11,7 +11,7 @@ public interface IndividualMapper {
 
     /*
      * Explicit mapping "delete -> deleted" to avoid errors between Lombok and MapStruct
-     * when mapping objects
+     * when mapping Individual objs into IndividualDto objs.
      * */
     @Mapping(source="deleted", target = "deleted") // NEEDED: ** READ THE NOTE ABOVE**
     @Mapping(source="user.id", target = "userId")
