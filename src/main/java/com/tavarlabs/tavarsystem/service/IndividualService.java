@@ -12,5 +12,6 @@ public interface IndividualService {
     List<Individual> getAllIndividuals();
     Individual updateIndividual(IndividualDto dto);
     Individual getSingleIndividual(String publicId);
+    Individual getSingleIndividual(String publicId, String messageWhenNotFound);
     void deleteIndividual(String publicId);
 }
