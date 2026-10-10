@@ -80,5 +80,13 @@ public class UserServiceImpl implements UserService {
                 ));
     }
 
-
+    @Override
+    public void deleteUser(String publicId) {
+        User user = userRepo.findUndeletedByPublicId(UUID.fromString(publicId))
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User was not found. id = " + publicId
+                ));
+        user.setDeleted(true);
+        userRepo.save(user);
+    }
 }

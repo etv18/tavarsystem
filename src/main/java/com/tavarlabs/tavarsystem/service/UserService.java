@@ -12,4 +12,5 @@ public interface UserService {
     List<User> getAll();
     User updateUser(UpdateUserRequestDto dto);
     User getSingleUser(String publicId);
+    void deleteUser(String publicId);
 }
