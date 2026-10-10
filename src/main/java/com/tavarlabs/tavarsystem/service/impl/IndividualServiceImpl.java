@@ -43,41 +43,41 @@ public class IndividualServiceImpl implements IndividualService {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        Individual currentIndi = getSingleIndividual(dto.getId());
+        Individual savedIndi = getSingleIndividual(dto.getId());
 
-        if(differentStrings(currentIndi.getFirstName(), dto.getFirstName())){
-            currentIndi.setFirstName(dto.getFirstName().toUpperCase());
+        if(differentStrings(savedIndi.getFirstName(), dto.getFirstName())){
+            savedIndi.setFirstName(dto.getFirstName().toUpperCase());
         }
 
-        if(differentStrings(currentIndi.getLastName(), dto.getLastName())){
-            currentIndi.setLastName(dto.getLastName().toUpperCase());
+        if(differentStrings(savedIndi.getLastName(), dto.getLastName())){
+            savedIndi.setLastName(dto.getLastName().toUpperCase());
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
-        if(differentStrings(currentIndi.getDocumentType().toString(), dto.getDocumentType().toString())){
-            currentIndi.setDocumentType(dto.getDocumentType());
+        if(differentStrings(savedIndi.getDocumentType().toString(), dto.getDocumentType().toString())){
+            savedIndi.setDocumentType(dto.getDocumentType());
         }
 
-        if(differentStrings(currentIndi.getDocumentNumber(), dto.getDocumentNumber())){
-            currentIndi.setDocumentNumber(dto.getDocumentNumber().toUpperCase());
+        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())){
+            savedIndi.setDocumentNumber(dto.getDocumentNumber().toUpperCase());
         }
 
         // TODO: ADD EMAIL VALIDATION BEFORE UPDATING IT
-        if(differentStrings(currentIndi.getEmail(), dto.getEmail())){
-            currentIndi.setEmail(dto.getEmail().toUpperCase());
+        if(differentStrings(savedIndi.getEmail(), dto.getEmail())){
+            savedIndi.setEmail(dto.getEmail().toUpperCase());
         }
 
-        if(differentStrings(currentIndi.getTelephone(), dto.getTelephone())){
-            currentIndi.setTelephone(dto.getTelephone().toUpperCase());
+        if(differentStrings(savedIndi.getTelephone(), dto.getTelephone())){
+            savedIndi.setTelephone(dto.getTelephone().toUpperCase());
         }
 
-        if(differentStrings(currentIndi.getAddress(), dto.getAddress())){
-            currentIndi.setAddress(dto.getAddress().toUpperCase());
+        if(differentStrings(savedIndi.getAddress(), dto.getAddress())){
+            savedIndi.setAddress(dto.getAddress().toUpperCase());
         }
 
         // TODO: ADD statement for updating user obj
 
-        return individualRepo.save(currentIndi);
+        return individualRepo.save(savedIndi);
     }
 
     @Override
