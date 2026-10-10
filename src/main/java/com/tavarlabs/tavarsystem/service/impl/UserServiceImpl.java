@@ -26,11 +26,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(CreateUserRequestDto dto) {
+        String msgWhenIndividualNotFound =
+                "Individual assignation failed when creating user. Individual ID: " + dto.getIndividualId();
+
         User user = User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .role(dto.getRoleName())
-                .individual(indiService.getSingleIndividual(dto.getIndividualId()))
+                .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
                 .build();
         return userRepo.save(user);
     }
