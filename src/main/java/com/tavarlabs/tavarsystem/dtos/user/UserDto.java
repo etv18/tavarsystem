@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.management.relation.Role;
 import java.util.UUID;
 
 @Data
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class UserDto {
     private UUID id;
     private String username;
-    private RoleName roleName;
+    private RoleName role;
     private UUID individualId;
     private boolean deleted;
     private boolean active;
