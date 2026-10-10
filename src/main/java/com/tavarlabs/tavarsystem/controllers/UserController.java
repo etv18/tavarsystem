@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.controllers;
 
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
+import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.mappers.UserMapper;
@@ -35,5 +36,13 @@ public class UserController {
         }).toList();
 
         return ResponseEntity.ok(userDtos);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(
+            @RequestBody UpdateUserRequestDto dto
+    ){
+        User user = userService.updateUser(dto);
+        return ResponseEntity.ok(userMapper.toDto(user));
     }
 }
