@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,5 +45,21 @@ public class UserController {
     ){
         User user = userService.updateUser(dto);
         return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    @GetMapping("/{publicId}")
+    public ResponseEntity<?> singleUser(
+            @PathVariable("publicId") String publicId
+    ){
+        User user = userService.getSingleUser(publicId);
+        return ResponseEntity.ok(userMapper.toDto(user));
+    }
+
+    @DeleteMapping("/{publicId}")
+    public ResponseEntity<?> deleteUser(
+            @PathVariable("publicId") String publicId
+    ){
+        userService.deleteUser(publicId);
+        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
 }
