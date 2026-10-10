@@ -37,6 +37,7 @@ public class IndividualServiceImpl implements IndividualService {
         return individualRepo.findAll();
     }
 
+    @Transactional
     @Override
     public Individual updateIndividual(IndividualDto dto) {
         if(dto == null) {
@@ -54,7 +55,7 @@ public class IndividualServiceImpl implements IndividualService {
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
-        if(differentStrings(savedIndi.getDocumentType().toString(), dto.getDocumentType().toString())){
+        if(differentStrings(savedIndi.getDocumentType().name(), dto.getDocumentType().name())){
             savedIndi.setDocumentType(dto.getDocumentType());
         }
 
@@ -84,7 +85,7 @@ public class IndividualServiceImpl implements IndividualService {
     public Individual getSingleIndividual(String publicId) {
         return individualRepo.findUndeletedByPublicId(UUID.fromString(publicId))
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "User with this id was not found: " + publicId
+                        "Individual was not found. id = " + publicId
                 ));
     }
 
