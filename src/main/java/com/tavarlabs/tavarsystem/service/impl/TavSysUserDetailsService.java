@@ -14,7 +14,7 @@ public class TavSysUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findUndeletedByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with username: " + username)
         );
         return new TavSysUserDetails(user);
