@@ -47,15 +47,15 @@ public class IndividualController {
         return ResponseEntity.ok(individualMapper.toResponseDto(individual));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getSingleIndividual(@PathVariable("id") String publicId){
+    @GetMapping("/{publicId}")
+    public ResponseEntity<?> getSingleIndividual(@PathVariable("publicId") String publicId){
         Individual individual = individualService.getSingleIndividual(publicId);
         return ResponseEntity.ok(individualMapper.toResponseDto(individual));
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteIndividual(@PathVariable("id") String publicId){
+    @DeleteMapping("/{publicId}")
+    public ResponseEntity<?> deleteIndividual(@PathVariable("publicId") String publicId){
         individualService.deleteIndividual(publicId);
         return ResponseEntity.ok(Map.of("message", "Individual deleted successfully."));
     }
