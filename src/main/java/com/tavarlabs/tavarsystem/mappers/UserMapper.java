@@ -4,6 +4,7 @@ import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
