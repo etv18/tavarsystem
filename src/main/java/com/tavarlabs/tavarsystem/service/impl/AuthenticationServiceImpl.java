@@ -1,6 +1,10 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
+import com.tavarlabs.tavarsystem.entity.Token;
+import com.tavarlabs.tavarsystem.entity.User;
+import com.tavarlabs.tavarsystem.enums.TokenType;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
+import com.tavarlabs.tavarsystem.repository.TokenRepository;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import com.tavarlabs.tavarsystem.utils.AppExceptionMsg;
@@ -34,6 +38,7 @@ import java.util.*;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepo;
 
     private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3600L * 24L * 5L; // RIGHT CONFIG, SET IT UP ON PRODUCTION: 1000L * 60L * 5L;
     private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 3600L * 24L * 5L;
@@ -187,6 +192,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String newToken = generateToken(user, AppKeywords.refreshTkn);
         setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, newToken);
     }
+
+    @Override
+    public Token saveToken(User user, TokenType type, String rawValue) {
+        Token token = Token.builder()
+                .user(user)
+                .type(type)
+                .rawValue(rawValue)
+                .build();
+        return tokenRepo.save(token);
+    }
+
 
     private SecretKey getSigningKey(){
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8); //look more info about this why utf_8 and ScretKey class
