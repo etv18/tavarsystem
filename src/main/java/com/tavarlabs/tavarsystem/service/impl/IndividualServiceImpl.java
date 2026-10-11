@@ -34,7 +34,7 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Override
     public List<Individual> getAllIndividuals() {
-        return individualRepo.findAll();
+        return individualRepo.findUndeletedAll();
     }
 
     @Transactional
