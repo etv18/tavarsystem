@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,7 @@ import java.util.UUID;
 public interface IndividualRepository extends JpaRepository<Individual, UUID> {
     @Query("SELECT i FROM Individual i WHERE i.id = :publicId AND i.deleted = false")
     Optional<Individual> findUndeletedByPublicId(@Param("publicId") UUID publicId);
+
+    @Query("SELECT i FROM Individual i WHERE i.deleted = false")
+    List<Individual> findUndeletedAll();
 }
