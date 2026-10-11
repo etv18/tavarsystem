@@ -68,10 +68,6 @@ public class UserServiceImpl implements UserService {
             savedUser.setActive(dto.isActive());
         }
 
-        if(savedUser.isDeleted() != dto.isDeleted()){
-            savedUser.setDeleted(dto.isDeleted());
-        }
-
         return userRepo.save(savedUser);
     }
 
