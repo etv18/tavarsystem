@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        User savedUser = getSingleUser(dto.getId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
+        User savedUser = getSingleUser(dto.getPublicId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
 
         if(AppFunctions.differentStrings(savedUser.getUsername(), dto.getUsername())){
             savedUser.setUsername(dto.getUsername());

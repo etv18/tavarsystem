@@ -41,5 +41,5 @@ public class TavSysUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() { return user.isActive(); }
 
-    public UUID getId() { return user.getId(); }
+    public UUID getId() { return user.getPublicId(); }
 }
