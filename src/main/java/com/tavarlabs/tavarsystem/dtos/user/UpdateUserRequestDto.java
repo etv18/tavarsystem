@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UpdateUserRequestDto {
-    private UUID id;
+    private UUID publicId;
     private String username;
     private String password;
     private RoleName role;
