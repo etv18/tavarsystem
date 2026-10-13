@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class IndividualDto {
-    private String id;
+    private String publicId;
     private String firstName;
     private String lastName;
     private DocumentType documentType;
