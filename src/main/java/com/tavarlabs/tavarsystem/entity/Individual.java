@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Individual {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
