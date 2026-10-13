@@ -44,7 +44,7 @@ public class IndividualServiceImpl implements IndividualService {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        Individual savedIndi = getSingleIndividual(dto.getId());
+        Individual savedIndi = getSingleIndividual(dto.getPublicId());
 
         if(differentStrings(savedIndi.getFirstName(), dto.getFirstName())){
             savedIndi.setFirstName(dto.getFirstName().toUpperCase());
