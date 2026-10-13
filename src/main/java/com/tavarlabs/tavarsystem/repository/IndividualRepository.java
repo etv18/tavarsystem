@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface IndividualRepository extends JpaRepository<Individual, UUID> {
-    @Query("SELECT i FROM Individual i WHERE i.id = :publicId AND i.deleted = false")
+public interface IndividualRepository extends JpaRepository<Individual, Long> {
+    @Query("SELECT i FROM Individual i WHERE i.publicId = :publicId AND i.deleted = false")
     Optional<Individual> findUndeletedByPublicId(@Param("publicId") UUID publicId);
 
     @Query("SELECT i FROM Individual i WHERE i.deleted = false")
