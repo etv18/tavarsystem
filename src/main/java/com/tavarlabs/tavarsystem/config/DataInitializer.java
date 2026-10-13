@@ -20,6 +20,9 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initUser(UserRepository userRepo, IndividualRepository individualRepo){
         return args -> {
+            User savedAdmin = userRepo.findUndeletedByUsername("admin").orElse(null);
+            if(savedAdmin != null) return;
+
             Individual individual = Individual.builder()
                     .firstName("John")
                     .lastName("Doe")
