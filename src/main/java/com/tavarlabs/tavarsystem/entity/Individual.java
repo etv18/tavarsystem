@@ -17,9 +17,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class Individual {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private Long id;
+
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    private UUID publicId;
 
     @Column(name = "firstname", nullable = false, length = 100)
     private String firstName;
@@ -59,5 +63,9 @@ public class Individual {
     protected void onCreate(){
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+
+        if(this.publicId == null){
+            this.publicId = UUID.randomUUID();
+        }
     }
 }
