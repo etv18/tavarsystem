@@ -11,13 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, Long> {
     // Optional<User> findByUsername(String username);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.deleted = false")
     Optional<User> findUndeletedByUsername(String username);
 
-    @Query("SELECT u FROM User u WHERE u.id = :publicId AND u.deleted = false")
+    @Query("SELECT u FROM User u WHERE u.publicId = :publicId AND u.deleted = false")
     Optional<User> findUndeletedByPublicId(@Param("publicId") UUID publicId);
 
     @Query("SELECT u FROM User u WHERE u.deleted = false")
