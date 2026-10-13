@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UserDto {
-    private UUID id;
+    private UUID publicId;
     private String username;
     private RoleName role;
     private UUID individualId;
