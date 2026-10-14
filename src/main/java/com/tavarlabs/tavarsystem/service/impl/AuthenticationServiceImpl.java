@@ -1,7 +1,10 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
+import com.tavarlabs.tavarsystem.dtos.auth.AuthUser;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
+import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
+import com.tavarlabs.tavarsystem.utils.AppFunctions;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import com.tavarlabs.tavarsystem.utils.AppExceptionMsg;
 import io.jsonwebtoken.*;
@@ -35,7 +38,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
-    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 3600L * 24L * 5L; // RIGHT CONFIG, SET IT UP ON PRODUCTION: 1000L * 60L * 5L;
+    private final Long ACCESS_JWT_EXP_IN_MS = 1000L * 10L; // RIGHT CONFIG, SET IT UP ON PRODUCTION: 1000L * 60L * 5L;
     private final Long REFRESH_JWT_EXP_IN_MS = 1000L * 3600L * 24L * 5L;
 
     @Value("${jwt.secret}")
@@ -73,18 +76,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String generateToken(UserDetails userDetails, String tokenType) {
+        TavSysUserDetails tavSysUserDetails = (TavSysUserDetails) userDetails;
+
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream()
+        claims.put("roles", tavSysUserDetails.getAuthorities().stream()
                 .map(grantedAuthority -> {
                     return grantedAuthority.getAuthority();
                 })
                 .toList()
         );
         claims.put("type", tokenType);
-        claims.put("active", userDetails.isEnabled());
+        claims.put("active", tavSysUserDetails.isEnabled());
+        claims.put("uid", tavSysUserDetails.getPublicId()); //public id
         return Jwts.builder()
                 .claims(claims)
-                .subject(userDetails.getUsername())
+                .subject(tavSysUserDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration( new Date(System.currentTimeMillis() + setJwtExpirationTimeInMs(tokenType)) )
                 .signWith(getSigningKey()) //TODO: ask why it can be done like this
@@ -188,6 +194,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, newToken);
     }
 
+    @Override
+    public AuthUser validateTokenBasedOnTrust(String accessToken, String refreshToken, HttpServletResponse response) {
+        if(isTokenExpired(refreshToken)) {
+            throw new TokenExpired(AppKeywords.refreshTkn, AppExceptionMsg.refreshTokenExpired);
+        }
+
+        if(isTokenExpired(accessToken)) {
+            throw new TokenExpired(AppKeywords.accessTkn, AppExceptionMsg.accessTokenExpired);
+        }
+
+        Claims claims = AppFunctions.parseJwtToClaims(accessToken, getSigningKey());
+
+        AuthUser principal = AuthUser.builder()
+                .publicId(UUID.fromString(claims.get("uid", String.class)))
+                .username(claims.getSubject())
+                .enabled(claims.get("active", Boolean.class))
+                .authorities(extractAuthorities(accessToken))
+                .build();
+
+        if(!principal.enabled()) {
+            throw new DisabledException(AppExceptionMsg.disabledException);
+        }
+
+        return principal;
+    }
+
     private SecretKey getSigningKey(){
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8); //look more info about this why utf_8 and ScretKey class
         return Keys.hmacShaKeyFor(keyBytes);
@@ -201,27 +233,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private String extractUserName(String token){
-        Claims claims = parseJwtToClaims(token);
+        Claims claims = AppFunctions.parseJwtToClaims(token, getSigningKey());
         return claims.getSubject();
     }
 
     private List<SimpleGrantedAuthority> extractAuthorities(String token){
-        Claims claims = parseJwtToClaims(token);
+        Claims claims = AppFunctions.parseJwtToClaims(token, getSigningKey());
         List<String> roles = (List<String>) claims.get("roles");
         return roles.stream()
                 .map(r -> new SimpleGrantedAuthority((String) r))
                 .toList();
     }
 
-    private Claims parseJwtToClaims(String token){
-        try {
-            return Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
-    }
+//    private Claims parseJwtToClaims(String token){
+//        try {
+//            return Jwts.parser()
+//                    .verifyWith(getSigningKey())
+//                    .build()
+//                    .parseSignedClaims(token)
+//                    .getPayload();
+//        } catch (ExpiredJwtException e) {
+//            return e.getClaims();
+//        }
+//    }
 }

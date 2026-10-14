@@ -1,5 +1,6 @@
 package com.tavarlabs.tavarsystem.service;
 
+import com.tavarlabs.tavarsystem.dtos.auth.AuthUser;
 import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,5 +17,5 @@ public interface AuthenticationService {
     void clearTokensFromHttpOnlyCookies(HttpServletResponse response);
     void renewAccessToken(HttpServletRequest request, HttpServletResponse response);
     void renewRefreshToken(HttpServletRequest request, HttpServletResponse response);
-
+    AuthUser validateTokenBasedOnTrust(String accessToken, String refreshToken, HttpServletResponse response);
 }
