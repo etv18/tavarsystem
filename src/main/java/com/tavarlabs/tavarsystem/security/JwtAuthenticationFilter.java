@@ -1,5 +1,6 @@
 package com.tavarlabs.tavarsystem.security;
 
+import com.tavarlabs.tavarsystem.dtos.auth.AuthUser;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
@@ -42,11 +43,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if(accessToken != null && refreshToken != null && !authRequest) {
 
-                UserDetails userDetails = authenticationService.validateToken(accessToken, refreshToken, response);
+                //UserDetails userDetails = authenticationService.validateToken(accessToken, refreshToken, response);
+                AuthUser principal = authenticationService.validateTokenBasedOnTrust(accessToken, refreshToken, response);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
+                        principal,
                         null,
-                        userDetails.getAuthorities()
+                        principal.authorities()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
