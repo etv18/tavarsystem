@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @Entity
-public class Authority {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,8 +20,8 @@ public class Authority {
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
     private UUID publicId;
 
-    @Column(name = "public_id", nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false, unique = true)
+    private String code;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
