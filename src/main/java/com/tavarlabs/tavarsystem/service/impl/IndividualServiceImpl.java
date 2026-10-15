@@ -3,10 +3,13 @@ package com.tavarlabs.tavarsystem.service.impl;
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
 import com.tavarlabs.tavarsystem.entity.Individual;
+import com.tavarlabs.tavarsystem.enums.DocumentType;
 import com.tavarlabs.tavarsystem.repository.IndividualRepository;
 import com.tavarlabs.tavarsystem.service.IndividualService;
+import com.tavarlabs.tavarsystem.utils.AppFunctions;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,7 @@ public class IndividualServiceImpl implements IndividualService {
     @Transactional
     @Override
     public Individual updateIndividual(IndividualDto dto) {
+        boolean userSendValidDocType = AppFunctions.enumContains(DocumentType.class, dto.getDocumentType().name());
         if(dto == null) {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
@@ -55,16 +59,25 @@ public class IndividualServiceImpl implements IndividualService {
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
-        if(differentStrings(savedIndi.getDocumentType().name(), dto.getDocumentType().name())){
+        if(
+                savedIndi.getDocumentType() != dto.getDocumentType() && dto.getDocumentType() != null
+                && userSendValidDocType
+        ){
             savedIndi.setDocumentType(dto.getDocumentType());
         }
 
-        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())){
+        if(
+                differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())
+                && userSendValidDocType
+        ){
             savedIndi.setDocumentNumber(dto.getDocumentNumber().toUpperCase());
         }
 
         // TODO: ADD EMAIL VALIDATION BEFORE UPDATING IT
         if(differentStrings(savedIndi.getEmail(), dto.getEmail())){
+            if(individualRepo.existsByEmail(dto.getEmail())) {
+                throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
+            }
             savedIndi.setEmail(dto.getEmail().toUpperCase());
         }
 
