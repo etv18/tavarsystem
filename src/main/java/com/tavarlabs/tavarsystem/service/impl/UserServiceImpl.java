@@ -5,11 +5,17 @@ import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
+import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.service.UserService;
 import com.tavarlabs.tavarsystem.utils.AppFunctions;
+import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final IndividualService indiService;
+    private final AuthenticationService authenticationService;
 
     @Override
     public User createUser(CreateUserRequestDto dto) {
@@ -45,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateUser(UpdateUserRequestDto dto) {
+    public User updateUser(UpdateUserRequestDto dto, HttpServletResponse response) {
         if(dto == null) {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
@@ -53,6 +60,20 @@ public class UserServiceImpl implements UserService {
         User savedUser = getSingleUser(dto.getPublicId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
 
         if(AppFunctions.differentStrings(savedUser.getUsername(), dto.getUsername())){
+            if(userRepo.existsByUsername(dto.getUsername())) {
+                throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
+            }
+
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication();
+
+            String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
+            String refreshJwt = authenticationService.generateToken(userDetails, AppKeywords.refreshTkn);
+
+            authenticationService.clearTokensFromHttpOnlyCookies(response);
+
+            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, accessJwt);
+            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, refreshJwt);
+
             savedUser.setUsername(dto.getUsername());
         }
 
