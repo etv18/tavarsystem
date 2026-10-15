@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 
 public class AppFunctions {
     public static boolean differentStrings(String currentVal, String newVal){
@@ -22,5 +23,15 @@ public class AppFunctions {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    // TODO: look more info about this "<T extends Enum<T>>" like why is needed
+    public static <T extends Enum<T>> boolean enumContains(Class<T> enumClass, String name){
+        if(enumClass == null || name == null){
+            return false;
+        }
+
+        return Arrays.stream(enumClass.getEnumConstants())
+                .anyMatch(e -> e.name().equalsIgnoreCase(name));
     }
 }
