@@ -17,4 +17,6 @@ public interface IndividualRepository extends JpaRepository<Individual, Long> {
 
     @Query("SELECT i FROM Individual i WHERE i.deleted = false")
     List<Individual> findUndeletedAll();
+
+    boolean existsByEmail(String email);
 }

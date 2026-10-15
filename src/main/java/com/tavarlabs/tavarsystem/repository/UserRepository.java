@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.deleted = false")
     List<User> findUndeletedAll();
+
+    boolean existsByUsername(String username);
 }
