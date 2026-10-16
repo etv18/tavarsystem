@@ -4,11 +4,13 @@ import com.tavarlabs.tavarsystem.dtos.exception.ExceptionBodyDto;
 import com.tavarlabs.tavarsystem.exception.TokenExpired;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -76,6 +78,30 @@ public class GlobalExceptionHandler {
                 .body(
                         ExceptionBodyDto.builder()
                                 .error("USERNAME DOES NOT EXISTS")
+                                .message(ex.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionBodyDto.builder()
+                                .error("ERROR ON REQUEST")
+                                .message(ex.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionBodyDto.builder()
+                                .error("DATA INTEGRITY VIOLATION")
                                 .message(ex.getMessage())
                                 .build()
                 );
