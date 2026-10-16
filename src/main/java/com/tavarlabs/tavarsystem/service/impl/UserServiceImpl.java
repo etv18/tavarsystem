@@ -33,6 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(CreateUserRequestDto dto) {
+        if(userRepo.existsByUsername(dto.getUsername())) {
+            throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
+        }
+
         String msgWhenIndividualNotFound =
                 "Individual assignation failed when creating user. Individual ID: " + dto.getIndividualId();
 
@@ -66,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication();
 
+            // ERROR-INFO: New tokens are being assined with the previous username
             String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
             String refreshJwt = authenticationService.generateToken(userDetails, AppKeywords.refreshTkn);
 
@@ -81,6 +86,7 @@ public class UserServiceImpl implements UserService {
             savedUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
+        // Refactor this so it compares against db registered roles
         if(AppFunctions.differentStrings(savedUser.getRole().name(), dto.getRole().name())){
             savedUser.setRole(dto.getRole());
         }
