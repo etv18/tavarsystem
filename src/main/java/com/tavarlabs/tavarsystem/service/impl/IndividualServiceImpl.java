@@ -23,6 +23,14 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Override
     public Individual createIndividual(CreateIndividualRequestDto dto) {
+        if(individualRepo.existsByEmailIgnoreCase(dto.getEmail())) {
+            throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
+        }
+
+        if(individualRepo.existsByDocumentNumberAndDocumentType(dto.getDocumentNumber(), dto.getDocumentType())) {
+            throw new DataIntegrityViolationException("This document number is already in used. # = "+dto.getDocumentNumber());
+        }
+
         Individual individual = Individual.builder()
                 .firstName(dto.getFirstName().toUpperCase())
                 .lastName(dto.getLastName().toUpperCase())
@@ -43,7 +51,6 @@ public class IndividualServiceImpl implements IndividualService {
     @Transactional
     @Override
     public Individual updateIndividual(IndividualDto dto) {
-        boolean userSendValidDocType = AppFunctions.enumContains(DocumentType.class, dto.getDocumentType().name());
         if(dto == null) {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
@@ -59,23 +66,20 @@ public class IndividualServiceImpl implements IndividualService {
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
-        if(
-                savedIndi.getDocumentType() != dto.getDocumentType() && dto.getDocumentType() != null
-                && userSendValidDocType
-        ){
+        if(savedIndi.getDocumentType() != dto.getDocumentType() && dto.getDocumentType() != null){
             savedIndi.setDocumentType(dto.getDocumentType());
         }
 
-        if(
-                differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())
-                && userSendValidDocType
-        ){
+        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())){
+            if(individualRepo.existsByDocumentNumberAndDocumentType(dto.getDocumentNumber(), dto.getDocumentType())) {
+                throw new DataIntegrityViolationException("This document number is already in used. doc-number = "+dto.getDocumentNumber());
+            }
             savedIndi.setDocumentNumber(dto.getDocumentNumber().toUpperCase());
         }
 
         // TODO: ADD EMAIL VALIDATION BEFORE UPDATING IT
         if(differentStrings(savedIndi.getEmail(), dto.getEmail())){
-            if(individualRepo.existsByEmail(dto.getEmail())) {
+            if(individualRepo.existsByEmailIgnoreCase(dto.getEmail())) {
                 throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
             }
             savedIndi.setEmail(dto.getEmail().toUpperCase());
