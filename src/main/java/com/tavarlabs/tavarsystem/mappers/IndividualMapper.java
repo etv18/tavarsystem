@@ -14,6 +14,6 @@ public interface IndividualMapper {
      * when mapping Individual objs into IndividualDto objs.
      * */
     @Mapping(source="deleted", target = "deleted") // NEEDED: ** READ THE NOTE ABOVE**
-    @Mapping(source="user.id", target = "userId")
+    @Mapping(source="user.publicId", target = "userId")
     IndividualDto toResponseDto(Individual individual);
 }
