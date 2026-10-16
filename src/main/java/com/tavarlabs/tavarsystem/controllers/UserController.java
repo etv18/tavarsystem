@@ -7,6 +7,7 @@ import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.mappers.UserMapper;
 import com.tavarlabs.tavarsystem.service.UserService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +42,10 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(
-            @RequestBody UpdateUserRequestDto dto
+            @RequestBody UpdateUserRequestDto dto,
+            HttpServletResponse response
     ){
-        User user = userService.updateUser(dto);
+        User user = userService.updateUser(dto, response);
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 
