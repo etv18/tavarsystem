@@ -35,7 +35,7 @@ public class Individual {
     @Column(name = "doc_type", nullable = false, length = 20)
     private DocumentType documentType;
 
-    @Column(name = "doc_number", nullable = false, length = 50)
+    @Column(name = "doc_number", nullable = false, length = 50, unique = true)
     private String documentNumber;
 
     @Column(name = "email", length = 120)
