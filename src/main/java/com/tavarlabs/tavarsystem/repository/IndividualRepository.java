@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.repository;
 
 import com.tavarlabs.tavarsystem.entity.Individual;
+import com.tavarlabs.tavarsystem.enums.DocumentType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +19,6 @@ public interface IndividualRepository extends JpaRepository<Individual, Long> {
     @Query("SELECT i FROM Individual i WHERE i.deleted = false")
     List<Individual> findUndeletedAll();
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByDocumentNumberAndDocumentType(String docNumber, DocumentType type);
 }
