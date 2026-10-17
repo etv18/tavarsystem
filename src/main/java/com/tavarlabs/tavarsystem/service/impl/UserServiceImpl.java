@@ -1,10 +1,12 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
+import com.tavarlabs.tavarsystem.dtos.auth.AuthUser;
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
+import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
 import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.service.UserService;
@@ -14,6 +16,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,17 +70,6 @@ public class UserServiceImpl implements UserService {
             if(userRepo.existsByUsername(dto.getUsername())) {
                 throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
             }
-
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication();
-
-            // ERROR-INFO: New tokens are being assined with the previous username
-            String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
-            String refreshJwt = authenticationService.generateToken(userDetails, AppKeywords.refreshTkn);
-
-            authenticationService.clearTokensFromHttpOnlyCookies(response);
-
-            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.accessTkn, accessJwt);
-            authenticationService.setTokenOnHttpOnlyCookie(response, AppKeywords.refreshTkn, refreshJwt);
 
             savedUser.setUsername(dto.getUsername());
         }
