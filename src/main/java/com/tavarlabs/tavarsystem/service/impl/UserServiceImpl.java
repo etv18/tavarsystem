@@ -1,24 +1,18 @@
 package com.tavarlabs.tavarsystem.service.impl;
 
-import com.tavarlabs.tavarsystem.dtos.auth.AuthUser;
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
-import com.tavarlabs.tavarsystem.dtos.user.UserDto;
+import com.tavarlabs.tavarsystem.entity.Role;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
-import com.tavarlabs.tavarsystem.security.TavSysUserDetails;
-import com.tavarlabs.tavarsystem.service.AuthenticationService;
 import com.tavarlabs.tavarsystem.service.IndividualService;
+import com.tavarlabs.tavarsystem.service.RoleService;
 import com.tavarlabs.tavarsystem.service.UserService;
 import com.tavarlabs.tavarsystem.utils.AppFunctions;
-import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final IndividualService indiService;
-    private final AuthenticationService authenticationService;
+    private final RoleService roleService;
 
     @Override
     public User createUser(CreateUserRequestDto dto) {
@@ -46,7 +40,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(dto.getRoleName())
+                .role(roleService.findRole(dto.getRoleId()))
                 .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
                 .build();
         return userRepo.save(user);
@@ -78,9 +72,9 @@ public class UserServiceImpl implements UserService {
             savedUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        // Refactor this so it compares against db registered roles
-        if(AppFunctions.differentStrings(savedUser.getRole().name(), dto.getRole().name())){
-            savedUser.setRole(dto.getRole());
+        if(!savedUser.getRole().getPublicId().equals(dto.getRoleId())){
+            Role dtoRole = roleService.findRole(dto.getRoleId());
+            savedUser.setRole(dtoRole);
         }
 
         if(savedUser.isActive() != dto.isActive()){
