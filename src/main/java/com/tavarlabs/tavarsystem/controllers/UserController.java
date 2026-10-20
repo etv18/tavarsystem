@@ -5,6 +5,7 @@ import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.mappers.UserMapper;
+import com.tavarlabs.tavarsystem.service.RoleService;
 import com.tavarlabs.tavarsystem.service.UserService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
+    private final RoleService roleService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createUser(
@@ -63,5 +65,11 @@ public class UserController {
     ){
         userService.deleteUser(publicId);
         return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+    }
+
+
+    @GetMapping("/roles")
+    public ResponseEntity<?> getAllRoles(){
+        return ResponseEntity.ok(roleService.findAll());
     }
 }
