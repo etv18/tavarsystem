@@ -13,6 +13,10 @@ import java.util.UUID;
 @Getter
 @Entity
 public class Action {
+    public Action(String code){
+        this.code = code;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
