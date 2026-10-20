@@ -15,6 +15,6 @@ import java.util.UUID;
 public class CreateUserRequestDto {
     private String username;
     private String password;
-    private RoleName roleName;
+    private UUID roleId; // later change to UUID for filtering only by their publicId
     private String individualId;
 }
