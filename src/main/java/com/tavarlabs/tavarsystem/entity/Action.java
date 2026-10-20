@@ -23,9 +23,6 @@ public class Action {
     @Column(nullable = false, unique = true)
     private String code;
 
-    @Column(nullable = false, unique = true)
-    private boolean granted;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
