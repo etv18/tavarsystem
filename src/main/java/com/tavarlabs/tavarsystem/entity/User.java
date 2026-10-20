@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -47,6 +48,14 @@ public class User {
     private LocalDateTime updatedAt;
 
     /* Relationships */
+
+    @ManyToMany
+        @JoinTable(
+                name = "user_action",
+                joinColumns = @JoinColumn(name = "user_id"),
+                inverseJoinColumns = @JoinColumn(name = "action_id")
+        )
+    private List<Action> permits;
 
     /*
      * User is the owning side of the one-to-one relationship because the

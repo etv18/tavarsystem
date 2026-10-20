@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @Getter
 @Entity
-public class Permission {
+public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
