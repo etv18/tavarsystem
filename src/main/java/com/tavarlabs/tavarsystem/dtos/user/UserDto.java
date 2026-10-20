@@ -16,7 +16,7 @@ import java.util.UUID;
 public class UserDto {
     private UUID publicId;
     private String username;
-    private RoleName role;
+    private String role;
     private UUID individualId;
     private boolean deleted;
     private boolean active;
