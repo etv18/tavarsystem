@@ -13,5 +13,6 @@ public interface UserMapper {
     @Mapping(source = "deleted", target = "deleted") // Explicit mapping for avoiding errors between MapStruct and Lombok
     @Mapping(source = "active", target = "active") // Same as above
     @Mapping(source = "individual.publicId", target = "individualId")
+    @Mapping(source = "role.name", target = "role")
     UserDto toDto(User user);
 }
