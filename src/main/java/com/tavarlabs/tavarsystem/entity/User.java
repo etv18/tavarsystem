@@ -32,8 +32,9 @@ public class User {
     @Column(nullable = false, length = 300)
     private String password;
 
-    @Column(nullable = false)
-    private RoleName role;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = false;
