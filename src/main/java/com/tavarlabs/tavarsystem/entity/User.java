@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -56,7 +58,7 @@ public class User {
                 joinColumns = @JoinColumn(name = "user_id"),
                 inverseJoinColumns = @JoinColumn(name = "action_id")
         )
-    private List<Action> permits;
+    private Set<Action> actions = new HashSet<>(); // This way there'll be a constraint which will make user_id and action_id be unique to avoid duplicates
 
     /*
      * User is the owning side of the one-to-one relationship because the
