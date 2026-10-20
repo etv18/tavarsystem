@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -22,6 +24,14 @@ public class Role {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToMany
+        @JoinTable(
+                name = "role_action",
+                joinColumns = @JoinColumn(name = "role_id"),
+                inverseJoinColumns = @JoinColumn(name = "action_id")
+        )
+    private Set<Action> actions = new HashSet<>(); // Unique rows in role_action table
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
