@@ -8,9 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 @RequiredArgsConstructor
@@ -20,7 +19,20 @@ public class TavSysUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getRole().getName()));
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>(Set.of(new SimpleGrantedAuthority(user.getRole().getName()))); // Add the role first
+        // Adding actions from the user's role
+        authorities.addAll(user.getRole().getActions().stream()
+                    .map(roleAction -> new SimpleGrantedAuthority(roleAction.getCode()))
+                    .collect(Collectors.toSet())
+        );
+
+        // Adding custom given actions from the user
+        authorities.addAll(user.getActions().stream()
+                .map(userAction -> new SimpleGrantedAuthority(userAction.getCode()))
+                .collect(Collectors.toSet())
+        );
+
+        return authorities;
     }
 
     @Override
