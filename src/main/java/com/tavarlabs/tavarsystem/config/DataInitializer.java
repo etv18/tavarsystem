@@ -57,7 +57,7 @@ public class DataInitializer {
             }
 
             // Setting up actions
-            Set<String> actionCodes = Set.of("ACTION_0", "ACTION_1", "ACTION_2", "ACTION_3", "ACTION_4");
+            Set<String> actionCodes = Set.of("ACTION_0", "ACTION_1", "ACTION_2", "ACTION_3", "ACTION_4", "EX_ACTION_1", "EX_ACTION_2");
             Set<Action> actions = new HashSet<>();
             for(String ac : actionCodes){
                 actions.add(new Action(ac.toUpperCase()));
@@ -68,7 +68,10 @@ public class DataInitializer {
 
 
             // PERSISTING ROLES
-
+            // Setting up roles: assigning actions
+            roles.get(0).setActions(new HashSet<>(savedActions)); // ROLE_ADMIN
+            roles.get(1).setActions(new HashSet<>(List.of(savedActions.get(0), savedActions.get(1), savedActions.get(2)))); // ROLE_OWNER
+            roles.get(2).setActions(new HashSet<>(List.of(savedActions.get(3), savedActions.get(4)))); // ROLE_CASHIER
             List<Role> savedRoles = roleRepo.saveAll(roles);
 
             // Setting up user
@@ -76,7 +79,8 @@ public class DataInitializer {
                     .individual(newIndividual)
                     .username("admin")
                     .password(passwordEncoder.encode("admin"))
-                    .role(savedRoles.get(1))
+                    .role(savedRoles.getFirst())
+                    .actions(new HashSet<>(List.of(savedActions.get(5), savedActions.get(6))))
                     .isActive(true)
                     .build();
 
