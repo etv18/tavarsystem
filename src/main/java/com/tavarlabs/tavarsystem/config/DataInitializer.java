@@ -1,15 +1,9 @@
 package com.tavarlabs.tavarsystem.config;
 
-import com.tavarlabs.tavarsystem.entity.Action;
-import com.tavarlabs.tavarsystem.entity.Individual;
-import com.tavarlabs.tavarsystem.entity.Role;
-import com.tavarlabs.tavarsystem.entity.User;
+import com.tavarlabs.tavarsystem.entity.*;
 import com.tavarlabs.tavarsystem.enums.DocumentType;
 import com.tavarlabs.tavarsystem.enums.RoleName;
-import com.tavarlabs.tavarsystem.repository.ActionRepository;
-import com.tavarlabs.tavarsystem.repository.IndividualRepository;
-import com.tavarlabs.tavarsystem.repository.RoleRepository;
-import com.tavarlabs.tavarsystem.repository.UserRepository;
+import com.tavarlabs.tavarsystem.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +25,8 @@ public class DataInitializer {
             UserRepository userRepo,
             IndividualRepository individualRepo,
             RoleRepository roleRepo,
-            ActionRepository actionRepo
+            ActionRepository actionRepo,
+            UserActionRepository userActionRepo
     ){
         return args -> {
             User savedAdmin = userRepo.findUndeletedByUsername("admin").orElse(null);
@@ -80,11 +75,15 @@ public class DataInitializer {
                     .username("admin")
                     .password(passwordEncoder.encode("admin"))
                     .role(savedRoles.getFirst())
-                    .actions(new HashSet<>(List.of(savedActions.get(5), savedActions.get(6))))
                     .isActive(true)
                     .build();
 
-            userRepo.save(user);
+            User savedUser = userRepo.save(user);
+
+            UserAction ac1 = new UserAction(savedUser, savedActions.get(5), false);
+            UserAction ac2 = new UserAction(savedUser, savedActions.get(6), true);
+
+            userActionRepo.saveAll(List.of(ac1, ac2));
 
             System.out.println("---------------> User data saved!!");
         };
