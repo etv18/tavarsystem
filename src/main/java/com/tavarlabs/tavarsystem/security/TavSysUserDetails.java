@@ -1,6 +1,7 @@
 package com.tavarlabs.tavarsystem.security;
 
 import com.tavarlabs.tavarsystem.entity.User;
+import com.tavarlabs.tavarsystem.entity.UserAction;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
@@ -19,20 +20,28 @@ public class TavSysUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<SimpleGrantedAuthority> authorities = new HashSet<>(Set.of(new SimpleGrantedAuthority(user.getRole().getName()))); // Add the role first
+        Set<String> authoritiesStr = new HashSet<>(Set.of(user.getRole().getName())); // Add the role first
+
         // Adding actions from the user's role
-        authorities.addAll(user.getRole().getActions().stream()
-                    .map(roleAction -> new SimpleGrantedAuthority(roleAction.getCode()))
+        authoritiesStr.addAll(user.getRole().getActions().stream()
+                    .map(roleAction -> roleAction.getCode())
                     .collect(Collectors.toSet())
         );
 
-        // Adding custom given actions from the user
-        authorities.addAll(user.getActions().stream()
-                .map(userAction -> new SimpleGrantedAuthority(userAction.getCode()))
-                .collect(Collectors.toSet())
-        );
+        for(UserAction userAction : user.getActionOverrides()){
+            if(userAction.isGranted()){
+                authoritiesStr.add(userAction.getAction().getCode());
+            } else {
+                String code = userAction.getAction().getCode();
+                authoritiesStr.remove(code);
+            }
+        }
 
-        return authorities;
+        System.out.println(authoritiesStr);
+
+        return authoritiesStr.stream()
+                .map(str -> new SimpleGrantedAuthority(str))
+                .collect(Collectors.toSet());
     }
 
     @Override
