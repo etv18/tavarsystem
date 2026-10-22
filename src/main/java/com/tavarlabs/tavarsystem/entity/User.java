@@ -2,10 +2,7 @@ package com.tavarlabs.tavarsystem.entity;
 
 import com.tavarlabs.tavarsystem.enums.RoleName;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,10 +11,13 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Table(name = "app_user")
 public class User {
 
@@ -52,13 +52,8 @@ public class User {
 
     /* Relationships */
 
-    @ManyToMany
-        @JoinTable(
-                name = "user_action",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "action_id")
-        )
-    private Set<Action> actions = new HashSet<>(); // This way there'll be a constraint which will make user_id and action_id be unique to avoid duplicates
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserAction> actionOverrides = new HashSet<>();
 
     /*
      * User is the owning side of the one-to-one relationship because the
