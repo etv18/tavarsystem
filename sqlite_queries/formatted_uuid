@@ -1,0 +1,9 @@
+SELECT 
+    LOWER(
+        SUBSTR(HEX(public_id), 1, 8)  || '-' ||
+        SUBSTR(HEX(public_id), 9, 4)  || '-' ||
+        SUBSTR(HEX(public_id), 13, 4) || '-' ||
+        SUBSTR(HEX(public_id), 17, 4) || '-' ||
+        SUBSTR(HEX(public_id), 21, 12)
+    ) AS formatted_uuid
+FROM action;
