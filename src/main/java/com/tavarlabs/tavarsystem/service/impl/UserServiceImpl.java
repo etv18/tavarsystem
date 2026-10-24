@@ -2,8 +2,12 @@ package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
+import com.tavarlabs.tavarsystem.entity.Action;
 import com.tavarlabs.tavarsystem.entity.Role;
 import com.tavarlabs.tavarsystem.entity.User;
+import com.tavarlabs.tavarsystem.entity.UserAction;
+import com.tavarlabs.tavarsystem.repository.ActionRepository;
+import com.tavarlabs.tavarsystem.repository.UserActionRepository;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.service.RoleService;
@@ -17,13 +21,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
+    private final UserActionRepository userActionRepo;
+    private final ActionRepository actionRepo;
     private final PasswordEncoder passwordEncoder;
     private final IndividualService indiService;
     private final RoleService roleService;
@@ -80,6 +89,21 @@ public class UserServiceImpl implements UserService {
 
         if(savedUser.isActive() != dto.isActive()){
             savedUser.setActive(dto.isActive());
+        }
+
+        // Updating actions
+        Set<String> savedUserActions = savedUser.getActions().stream()
+                .map(userAction -> userAction.getAction().getCode())
+                .collect(Collectors.toSet());
+        if(!savedUserActions.equals(dto.getActions())){
+            userActionRepo.deleteAllByUserId(savedUser.getId());
+            Set<Action> savedActions = new HashSet<>(actionRepo.findAllByCodeIn(dto.getActions()));
+
+            Set<UserAction> newUserActions = savedActions.stream().map(action -> {
+                return new UserAction(savedUser, action, true);
+            }).collect(Collectors.toSet());
+
+            savedUser.setActions(newUserActions);
         }
 
         return userRepo.save(savedUser);
