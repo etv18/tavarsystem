@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RoleService {
-    Role findRole(UUID publicId);
+    Role findRoleByPublicId(UUID publicId);
+    Role findRoleByName(String roleName);
     List<Role> findAll();
     RoleActionsResponse assignActions(RoleActionsRequest rolActReq);
     RoleActionsResponse removeActions(RoleActionsRequest rolActReq);

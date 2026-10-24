@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public record CreateRoleRequest(
        String name,
-       Set<UUID> actionIds   // optional
+       Set<String> actionCodes   // optional
 ) {}

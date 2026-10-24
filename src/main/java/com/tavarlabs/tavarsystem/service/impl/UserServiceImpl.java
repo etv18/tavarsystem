@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(roleService.findRole(dto.getRoleId()))
+                .role(roleService.findRoleByPublicId(dto.getRoleId()))
                 .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
                 .build();
         return userRepo.save(user);
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if(!savedUser.getRole().getPublicId().equals(dto.getRoleId())){
-            Role dtoRole = roleService.findRole(dto.getRoleId());
+            Role dtoRole = roleService.findRoleByPublicId(dto.getRoleId());
             savedUser.setRole(dtoRole);
         }
 

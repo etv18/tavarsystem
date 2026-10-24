@@ -28,9 +28,16 @@ public class RoleServiceImpl implements RoleService {
     private final ActionRepository actionRepo;
 
     @Override
-    public Role findRole(UUID publicId) {
+    public Role findRoleByPublicId(UUID publicId) {
         return roleRepo.findByPublicId(publicId).orElseThrow(
                 () -> new EntityNotFoundException("Role was not found. Given id = "+publicId)
+        );
+    }
+
+    @Override
+    public Role findRoleByName(String roleName) {
+        return roleRepo.findByName(roleName).orElseThrow(
+                () -> new EntityNotFoundException("Role was not found. Given name = "+roleName)
         );
     }
 
@@ -39,14 +46,14 @@ public class RoleServiceImpl implements RoleService {
         return roleRepo.findAll();
     }
 
-    @Override
     @Transactional
+    @Override
     public RoleActionsResponse assignActions(RoleActionsRequest rolActReq) {
-        System.out.println(rolActReq.roleId());
-        Role role = findRole(rolActReq.roleId());
+        System.out.println(rolActReq.roleName());
+        Role role = findRoleByName(rolActReq.roleName());
 
-        List<Action> actions = actionRepo.findAllByPublicIdIn(rolActReq.actionIds());
-        if (actions.size() != rolActReq.actionIds().size()) {
+        List<Action> actions = actionRepo.findAllByCodeIn(rolActReq.actionCodes());
+        if (actions.size() != rolActReq.actionCodes().size()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more actions were not found");
         }
 
@@ -60,9 +67,9 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     @Override
     public RoleActionsResponse removeActions(RoleActionsRequest rolActReq) {
-        Role role = findRole(rolActReq.roleId());
+        Role role = findRoleByName(rolActReq.roleName());
 
-        role.getActions().removeIf(action -> rolActReq.actionIds().contains(action.getPublicId()));
+        role.getActions().removeIf(action -> rolActReq.actionCodes().contains(action.getCode()));
         role.setUpdatedAt(LocalDateTime.now());
 
         Role saved = roleRepo.save(role);
@@ -80,10 +87,10 @@ public class RoleServiceImpl implements RoleService {
 
         Role role = new Role(name);
 
-        Set<UUID> actionIds = roleReq.actionIds();
-        if (actionIds != null && !actionIds.isEmpty()) {
-            List<Action> actions = actionRepo.findAllByPublicIdIn(actionIds);
-            if (actions.size() != actionIds.size()) {
+        Set<String> actionCodes = roleReq.actionCodes();
+        if (actionCodes != null && !actionCodes.isEmpty()) {
+            List<Action> actions = actionRepo.findAllByCodeIn(actionCodes);
+            if (actions.size() != actionCodes.size()) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more actions were not found");
             }
             role.getActions().addAll(actions);

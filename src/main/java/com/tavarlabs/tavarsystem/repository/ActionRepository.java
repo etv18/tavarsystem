@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public interface ActionRepository extends JpaRepository<Action, Long> {
     List<Action> findAllByPublicIdIn(Collection<UUID> publicIds);
+    List<Action> findAllByCodeIn(Collection<String> codes);
     boolean existsByCode(String code);
 }
