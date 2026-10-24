@@ -3,6 +3,7 @@ package com.tavarlabs.tavarsystem.controllers;
 import com.tavarlabs.tavarsystem.dtos.auth.CreateRoleRequest;
 import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsRequest;
 import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsResponse;
+import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.service.RoleService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,14 @@ public class RoleController {
     }
 
     @DeleteMapping("/remove/action")
-    public RoleActionsResponse remove(@RequestBody RoleActionsRequest request) {
+    public RoleActionsResponse removeAction(@RequestBody RoleActionsRequest request) {
         return roleService.removeActions(request);
+    }
+
+    @DeleteMapping("/{roleName}")
+    public SimpleMessage delete(
+            @PathVariable("roleName") String roleName
+    ){
+        return roleService.deleteRole(roleName);
     }
 }
