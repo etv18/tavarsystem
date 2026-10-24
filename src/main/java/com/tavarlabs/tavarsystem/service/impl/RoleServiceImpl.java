@@ -3,6 +3,7 @@ package com.tavarlabs.tavarsystem.service.impl;
 import com.tavarlabs.tavarsystem.dtos.auth.CreateRoleRequest;
 import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsRequest;
 import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsResponse;
+import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.entity.Action;
 import com.tavarlabs.tavarsystem.entity.Role;
 import com.tavarlabs.tavarsystem.repository.ActionRepository;
@@ -10,6 +11,7 @@ import com.tavarlabs.tavarsystem.repository.RoleRepository;
 import com.tavarlabs.tavarsystem.service.RoleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +86,7 @@ public class RoleServiceImpl implements RoleService {
         String name = normalizeRoleName(roleReq.name());
 
         if (roleRepo.existsByName(name)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Role already exists: " + name);
+            throw new DataIntegrityViolationException("Role already exists: " + name);
         }
 
         Role role = new Role(name);
@@ -91,13 +95,23 @@ public class RoleServiceImpl implements RoleService {
         if (actionCodes != null && !actionCodes.isEmpty()) {
             List<Action> actions = actionRepo.findAllByCodeIn(actionCodes);
             if (actions.size() != actionCodes.size()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more actions were not found");
+                throw new EntityNotFoundException("One or more actions were not found");
             }
             role.getActions().addAll(actions);
         }
 
         Role saved = roleRepo.save(role);
         return toResponse(saved);
+    }
+
+    @Transactional
+    @Override
+    public SimpleMessage deleteRole(String roleName) {
+        Long r = roleRepo.deleteByName(roleName);
+        if(r < 1){
+            return new SimpleMessage("No role was deleted by the name you provided. Role name = "+roleName);
+        }
+        return new SimpleMessage(r + " record/s deleted");
     }
 
     private String normalizeRoleName(String raw) {
