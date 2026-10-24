@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final IndividualService indiService;
     private final RoleService roleService;
 
+    @Transactional
     @Override
     public User createUser(CreateUserRequestDto dto) {
         if(userRepo.existsByUsername(dto.getUsername())) {
@@ -92,6 +93,7 @@ public class UserServiceImpl implements UserService {
                 ));
     }
 
+    @Transactional
     @Override
     public void deleteUser(String publicId) {
         User user = userRepo.findUndeletedByPublicId(UUID.fromString(publicId))
