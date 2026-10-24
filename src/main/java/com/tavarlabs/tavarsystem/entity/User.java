@@ -53,7 +53,7 @@ public class User {
     /* Relationships */
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserAction> actionOverrides = new HashSet<>();
+    private Set<UserAction> actions = new HashSet<>();
 
     /*
      * User is the owning side of the one-to-one relationship because the

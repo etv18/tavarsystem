@@ -28,7 +28,7 @@ public class TavSysUserDetails implements UserDetails {
                     .collect(Collectors.toSet())
         );
 
-        for(UserAction userAction : user.getActionOverrides()){
+        for(UserAction userAction : user.getActions()){
             if(userAction.isGranted()){
                 authoritiesStr.add(userAction.getAction().getCode());
             } else {
