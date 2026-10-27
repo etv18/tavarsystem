@@ -18,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
@@ -52,8 +49,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional
     @Override
-    public RoleActionsResponse assignActions(RoleActionsRequest rolActReq) {
-        System.out.println(rolActReq.roleName());
+    public RoleActionsResponse overrideActions(RoleActionsRequest rolActReq) {
         Role role = findRoleByName(rolActReq.roleName());
 
         List<Action> actions = actionRepo.findAllByCodeIn(rolActReq.actionCodes());
@@ -61,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "One or more actions were not found");
         }
 
-        role.getActions().addAll(actions);   // Set ignores teh actions already assigned
+        role.setActions(new HashSet<>(actions));
         role.setUpdatedAt(LocalDateTime.now());
 
         Role saved = roleRepo.save(role);

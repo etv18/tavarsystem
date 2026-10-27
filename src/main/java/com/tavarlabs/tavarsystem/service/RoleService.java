@@ -13,7 +13,7 @@ public interface RoleService {
     Role findRoleByPublicId(UUID publicId);
     Role findRoleByName(String roleName);
     List<Role> findAll();
-    RoleActionsResponse assignActions(RoleActionsRequest rolActReq);
+    RoleActionsResponse overrideActions(RoleActionsRequest rolActReq);
     RoleActionsResponse removeActions(RoleActionsRequest rolActReq);
     RoleActionsResponse createRole(CreateRoleRequest roleReq);
     SimpleMessage deleteRole(String roleName);
