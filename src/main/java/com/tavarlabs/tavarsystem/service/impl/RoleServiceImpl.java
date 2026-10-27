@@ -6,6 +6,7 @@ import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsResponse;
 import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.entity.Action;
 import com.tavarlabs.tavarsystem.entity.Role;
+import com.tavarlabs.tavarsystem.mappers.RoleMapper;
 import com.tavarlabs.tavarsystem.repository.ActionRepository;
 import com.tavarlabs.tavarsystem.repository.RoleRepository;
 import com.tavarlabs.tavarsystem.service.RoleService;
@@ -27,6 +28,7 @@ import java.util.zip.DataFormatException;
 public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepo;
     private final ActionRepository actionRepo;
+    private final RoleMapper roleMapper;
 
     @Override
     public Role findRoleByPublicId(UUID publicId) {
@@ -108,6 +110,11 @@ public class RoleServiceImpl implements RoleService {
             return new SimpleMessage("No role was deleted by the name you provided. Role name = "+roleName);
         }
         return new SimpleMessage(r + " record/s deleted");
+    }
+
+    @Override
+    public RoleActionsResponse getSingleRole(String roleName) {
+        return roleMapper.toRoleActionsResponse(findRoleByName(roleName.toUpperCase()));
     }
 
     private String normalizeRoleName(String raw) {

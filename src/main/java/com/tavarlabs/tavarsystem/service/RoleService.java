@@ -17,4 +17,5 @@ public interface RoleService {
     RoleActionsResponse removeActions(RoleActionsRequest rolActReq);
     RoleActionsResponse createRole(CreateRoleRequest roleReq);
     SimpleMessage deleteRole(String roleName);
+    RoleActionsResponse getSingleRole(String roleName);
 }
