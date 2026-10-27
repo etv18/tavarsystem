@@ -66,10 +66,4 @@ public class UserController {
         userService.deleteUser(publicId);
         return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
-
-
-    @GetMapping("/roles")
-    public ResponseEntity<?> getAllRoles(){
-        return ResponseEntity.ok(roleService.findAll());
-    }
 }
