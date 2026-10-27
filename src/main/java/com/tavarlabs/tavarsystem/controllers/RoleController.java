@@ -34,4 +34,11 @@ public class RoleController {
     ){
         return roleService.deleteRole(roleName);
     }
+
+    @GetMapping("/{roleName}")
+    public RoleActionsResponse getSingleRole(
+            @PathVariable("roleName") String roleName
+    ){
+        return roleService.getSingleRole(roleName);
+    }
 }
