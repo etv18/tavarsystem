@@ -9,9 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface UserService {
-    User createUser(CreateUserRequestDto dto);
-    List<User> getAll();
-    User updateUser(UpdateUserRequestDto dto, HttpServletResponse response);
+    UserDto createUser(CreateUserRequestDto dto);
+    List<UserDto> getAll();
+    UserDto updateUser(UpdateUserRequestDto dto, HttpServletResponse response);
     User getSingleUser(String publicId);
     void deleteUser(String publicId);
 }

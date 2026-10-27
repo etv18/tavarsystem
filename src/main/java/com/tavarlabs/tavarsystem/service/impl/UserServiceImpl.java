@@ -2,10 +2,12 @@ package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
+import com.tavarlabs.tavarsystem.dtos.user.UserDto;
 import com.tavarlabs.tavarsystem.entity.Action;
 import com.tavarlabs.tavarsystem.entity.Role;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.entity.UserAction;
+import com.tavarlabs.tavarsystem.mappers.UserMapper;
 import com.tavarlabs.tavarsystem.repository.ActionRepository;
 import com.tavarlabs.tavarsystem.repository.UserActionRepository;
 import com.tavarlabs.tavarsystem.repository.UserRepository;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepo;
+    private final UserMapper userMapper;
     private final UserActionRepository userActionRepo;
     private final ActionRepository actionRepo;
     private final PasswordEncoder passwordEncoder;
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User createUser(CreateUserRequestDto dto) {
+    public UserDto createUser(CreateUserRequestDto dto) {
         if(userRepo.existsByUsername(dto.getUsername())) {
             throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
         }
@@ -53,17 +56,18 @@ public class UserServiceImpl implements UserService {
                 .role(roleService.findRoleByPublicId(dto.getRoleId()))
                 .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
                 .build();
-        return userRepo.save(user);
+        return userMapper.toDto(userRepo.save(user));
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepo.findUndeletedAll();
+    public List<UserDto> getAll() {
+        List<User> users = userRepo.findUndeletedAll();
+        return users.stream().map(userMapper::toDto).toList();
     }
 
     @Transactional
     @Override
-    public User updateUser(UpdateUserRequestDto dto, HttpServletResponse response) {
+    public UserDto updateUser(UpdateUserRequestDto dto, HttpServletResponse response) {
         if(dto == null) {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
@@ -106,7 +110,7 @@ public class UserServiceImpl implements UserService {
             savedUser.setActions(newUserActions);
         }
 
-        return userRepo.save(savedUser);
+        return userMapper.toDto(userRepo.save(savedUser));
     }
 
     @Override

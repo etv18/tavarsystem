@@ -20,23 +20,16 @@ public class IndividualController {
     private final IndividualService individualService;
     private final IndividualMapper individualMapper;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createIndividual(
+    @PostMapping
+    public IndividualDto createIndividual(
             @RequestBody CreateIndividualRequestDto requestDto
     ) {
-        Individual individual =  individualService.createIndividual(requestDto);
-        return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+        return individualService.createIndividual(requestDto);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAll(){
-        List<Individual> individuals = individualService.getAllIndividuals();
-        List<IndividualDto> individualsDto = individuals.stream()
-                .map(indvd -> {
-                    return individualMapper.toResponseDto(indvd);
-                })
-                .toList();
-        return ResponseEntity.ok(individualsDto);
+    @GetMapping
+    public List<IndividualDto> getAll(){
+        return individualService.getAllIndividuals();
     }
 
     @PutMapping("/update")

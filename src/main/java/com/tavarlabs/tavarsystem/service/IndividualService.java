@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IndividualService {
-    Individual createIndividual(CreateIndividualRequestDto dto);
-    List<Individual> getAllIndividuals();
+    IndividualDto createIndividual(CreateIndividualRequestDto dto);
+    List<IndividualDto> getAllIndividuals();
     Individual updateIndividual(IndividualDto dto);
     Individual getSingleIndividual(String publicId);
     Individual getSingleIndividual(String publicId, String messageWhenNotFound);

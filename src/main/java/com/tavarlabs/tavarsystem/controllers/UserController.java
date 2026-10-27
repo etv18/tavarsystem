@@ -1,5 +1,6 @@
 package com.tavarlabs.tavarsystem.controllers;
 
+import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.dtos.user.CreateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UpdateUserRequestDto;
 import com.tavarlabs.tavarsystem.dtos.user.UserDto;
@@ -22,48 +23,40 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
-    private final RoleService roleService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createUser(
+    @PostMapping
+    public UserDto createUser(
             @RequestBody CreateUserRequestDto dto
     ) {
-        User user = userService.createUser(dto);
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return userService.createUser(dto);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAll(){
-        List<User> users = userService.getAll();
-        List<UserDto> userDtos = users.stream().map(user -> {
-            return userMapper.toDto(user);
-        }).toList();
-
-        return ResponseEntity.ok(userDtos);
+    @GetMapping
+    public List<UserDto> getAll(){
+        return userService.getAll();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUser(
+    @PutMapping
+    public UserDto updateUser(
             @RequestBody UpdateUserRequestDto dto,
             HttpServletResponse response
     ){
-        User user = userService.updateUser(dto, response);
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return userService.updateUser(dto, response);
     }
 
     @GetMapping("/{publicId}")
-    public ResponseEntity<?> singleUser(
+    public UserDto singleUser(
             @PathVariable("publicId") String publicId
     ){
         User user = userService.getSingleUser(publicId);
-        return ResponseEntity.ok(userMapper.toDto(user));
+        return userMapper.toDto(user);
     }
 
     @DeleteMapping("/{publicId}")
-    public ResponseEntity<?> deleteUser(
+    public SimpleMessage deleteUser(
             @PathVariable("publicId") String publicId
     ){
         userService.deleteUser(publicId);
-        return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
+        return new SimpleMessage("User deleted successfully");
     }
 }

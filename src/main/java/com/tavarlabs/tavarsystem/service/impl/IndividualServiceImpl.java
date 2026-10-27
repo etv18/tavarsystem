@@ -3,7 +3,9 @@ package com.tavarlabs.tavarsystem.service.impl;
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
 import com.tavarlabs.tavarsystem.entity.Individual;
+import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.enums.DocumentType;
+import com.tavarlabs.tavarsystem.mappers.IndividualMapper;
 import com.tavarlabs.tavarsystem.repository.IndividualRepository;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.utils.AppFunctions;
@@ -20,9 +22,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class IndividualServiceImpl implements IndividualService {
     private final IndividualRepository individualRepo;
+    private final IndividualMapper individualMapper;
 
     @Override
-    public Individual createIndividual(CreateIndividualRequestDto dto) {
+    public IndividualDto createIndividual(CreateIndividualRequestDto dto) {
         if(individualRepo.existsByEmailIgnoreCase(dto.getEmail())) {
             throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
         }
@@ -40,12 +43,16 @@ public class IndividualServiceImpl implements IndividualService {
                 .telephone(dto.getTelephone().toUpperCase())
                 .address(dto.getAddress().toUpperCase())
                 .build();
-        return individualRepo.save(individual);
+
+        return individualMapper.toResponseDto(individualRepo.save(individual));
     }
 
     @Override
-    public List<Individual> getAllIndividuals() {
-        return individualRepo.findUndeletedAll();
+    public List<IndividualDto> getAllIndividuals() {
+        List<Individual> individuals = individualRepo.findUndeletedAll();
+        return individuals.stream()
+                .map(individualMapper::toResponseDto)
+                .toList();
     }
 
     @Transactional
