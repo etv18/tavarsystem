@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface RoleService {
     Role findRoleByPublicId(UUID publicId);
     Role findRoleByName(String roleName);
-    List<Role> findAll();
+    List<RoleActionsResponse> findAll();
     RoleActionsResponse overrideActions(RoleActionsRequest rolActReq);
     RoleActionsResponse removeActions(RoleActionsRequest rolActReq);
     RoleActionsResponse createRole(CreateRoleRequest roleReq);

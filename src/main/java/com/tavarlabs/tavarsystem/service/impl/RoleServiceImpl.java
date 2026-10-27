@@ -45,8 +45,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> findAll() {
-        return roleRepo.findAll();
+    public List<RoleActionsResponse> findAll() {
+        List<Role> roles = roleRepo.findAll();
+        return roles.stream().map(roleMapper::toRoleActionsResponse).toList();
     }
 
     @Transactional
