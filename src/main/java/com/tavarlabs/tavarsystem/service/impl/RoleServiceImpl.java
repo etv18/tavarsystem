@@ -103,7 +103,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     @Override
     public SimpleMessage deleteRole(String roleName) {
-        Long r = roleRepo.deleteByName(roleName);
+        Long r = roleRepo.deleteByName(roleName.toUpperCase());
         if(r < 1){
             return new SimpleMessage("No role was deleted by the name you provided. Role name = "+roleName);
         }
