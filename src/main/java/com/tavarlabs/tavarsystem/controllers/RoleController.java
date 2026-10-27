@@ -23,14 +23,9 @@ public class RoleController {
         return roleService.createRole(request);
     }
 
-    @PostMapping("/assign/action")
+    @PostMapping("/override/action")
     public RoleActionsResponse assign(@RequestBody RoleActionsRequest request) {
-        return roleService.assignActions(request);
-    }
-
-    @DeleteMapping("/remove/action")
-    public RoleActionsResponse removeAction(@RequestBody RoleActionsRequest request) {
-        return roleService.removeActions(request);
+        return roleService.overrideActions(request);
     }
 
     @DeleteMapping("/{roleName}")
