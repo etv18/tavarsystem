@@ -108,22 +108,22 @@ public class IndividualServiceImpl implements IndividualService {
     }
 
     @Override
-    public Individual getSingleIndividual(String publicId) {
-        return individualRepo.findUndeletedByPublicId(UUID.fromString(publicId))
+    public Individual getSingleIndividual(UUID publicId) {
+        return individualRepo.findUndeletedByPublicId(publicId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Individual was not found. id = " + publicId
                 ));
     }
 
     @Override
-    public Individual getSingleIndividual(String publicId, String messageWhenNotFound) {
-        return individualRepo.findUndeletedByPublicId(UUID.fromString(publicId))
+    public Individual getSingleIndividual(UUID publicId, String messageWhenNotFound) {
+        return individualRepo.findUndeletedByPublicId(publicId)
                 .orElseThrow(() -> new EntityNotFoundException(messageWhenNotFound));
     }
 
     @Transactional
     @Override
-    public void deleteIndividual(String publicId) {
+    public void deleteIndividual(UUID publicId) {
         Individual individual = getSingleIndividual(publicId);
         individual.setDeleted(true);
         individualRepo.save(individual);

@@ -23,8 +23,11 @@ public interface UserMapper {
 
     @Named("parseUserActions")
     default Set<String> parseUserActions(User user){
-        return user.getActions().stream()
-                .map(action -> action.getAction().getCode())
-                .collect(Collectors.toSet());
+        if(user.getActions() != null){
+            return user.getActions().stream()
+                    .map(action -> action.getAction().getCode())
+                    .collect(Collectors.toSet());
+        }
+        return Set.of();
     }
 }

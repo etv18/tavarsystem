@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class IndividualController {
 
     @GetMapping("/{publicId}")
     public IndividualDto getSingleIndividual(
-            @PathVariable("publicId") String publicId
+            @PathVariable("publicId") UUID publicId
     ){
         Individual individual = individualService.getSingleIndividual(publicId);
         return individualMapper.toResponseDto(individual);
@@ -53,7 +54,7 @@ public class IndividualController {
 
     @DeleteMapping("/{publicId}")
     public SimpleMessage deleteIndividual(
-            @PathVariable("publicId") String publicId
+            @PathVariable("publicId") UUID publicId
     ){
         individualService.deleteIndividual(publicId);
         return new SimpleMessage("Individual deleted successfully.");

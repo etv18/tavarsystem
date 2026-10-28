@@ -12,7 +12,7 @@ public interface IndividualService {
     IndividualDto createIndividual(CreateIndividualRequestDto dto);
     List<IndividualDto> getAllIndividuals();
     Individual updateIndividual(UpdateIndividualRequest dto);
-    Individual getSingleIndividual(String publicId);
-    Individual getSingleIndividual(String publicId, String messageWhenNotFound);
-    void deleteIndividual(String publicId);
+    Individual getSingleIndividual(UUID publicId);
+    Individual getSingleIndividual(UUID publicId, String messageWhenNotFound);
+    void deleteIndividual(UUID publicId);
 }

@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .role(roleService.findRoleByPublicId(dto.getRoleId()))
+                .role(roleService.findRoleByName(dto.getRoleName()))
                 .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
                 .build();
         return userMapper.toDto(userRepo.save(user));
