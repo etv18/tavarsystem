@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.service.impl;
 
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
+import com.tavarlabs.tavarsystem.dtos.individual.UpdateIndividualRequest;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.entity.User;
 import com.tavarlabs.tavarsystem.enums.DocumentType;
@@ -26,22 +27,22 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Override
     public IndividualDto createIndividual(CreateIndividualRequestDto dto) {
-        if(individualRepo.existsByEmailIgnoreCase(dto.getEmail())) {
-            throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
+        if(individualRepo.existsByEmailIgnoreCase(dto.email())) {
+            throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.email());
         }
 
-        if(individualRepo.existsByDocumentNumberAndDocumentType(dto.getDocumentNumber(), dto.getDocumentType())) {
-            throw new DataIntegrityViolationException("This document number is already in used. # = "+dto.getDocumentNumber());
+        if(individualRepo.existsByDocumentNumberAndDocumentType(dto.documentNumber(), dto.documentType())) {
+            throw new DataIntegrityViolationException("This document number is already in used. # = "+dto.documentNumber());
         }
 
         Individual individual = Individual.builder()
-                .firstName(upper(dto.getFirstName()))
-                .lastName(upper(dto.getLastName()))
-                .documentType(dto.getDocumentType())
-                .documentNumber(upper(dto.getDocumentNumber()))
-                .email(upper(dto.getEmail()))
-                .telephone(dto.getTelephone())
-                .address(upper(dto.getAddress()))
+                .firstName(upper(dto.firstName()))
+                .lastName(upper(dto.lastName()))
+                .documentType(dto.documentType())
+                .documentNumber(upper(dto.documentNumber()))
+                .email(upper(dto.email()))
+                .telephone(dto.telephone())
+                .address(upper(dto.address()))
                 .build();
 
         return individualMapper.toResponseDto(individualRepo.save(individual));
@@ -57,47 +58,50 @@ public class IndividualServiceImpl implements IndividualService {
 
     @Transactional
     @Override
-    public Individual updateIndividual(IndividualDto dto) {
-        if(dto == null) {
+    public Individual updateIndividual(UpdateIndividualRequest dto) {
+        if (dto == null) {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        Individual savedIndi = getSingleIndividual(dto.getPublicId());
+        Individual savedIndi = getSingleIndividual(dto.publicId());
 
-        if(differentStrings(savedIndi.getFirstName(), dto.getFirstName())){
-            savedIndi.setFirstName(upper(dto.getFirstName()));
+        if (differentStrings(savedIndi.getFirstName(), dto.firstName())) {
+            savedIndi.setFirstName(upper(dto.firstName()));
         }
 
-        if(differentStrings(savedIndi.getLastName(), dto.getLastName())){
-            savedIndi.setLastName(upper(dto.getLastName()));
+        if (differentStrings(savedIndi.getLastName(), dto.lastName())) {
+            savedIndi.setLastName(upper(dto.lastName()));
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
-        if(savedIndi.getDocumentType() != dto.getDocumentType() && dto.getDocumentType() != null){
-            savedIndi.setDocumentType(dto.getDocumentType());
+        if (dto.documentType() != null && savedIndi.getDocumentType() != dto.documentType()) {
+            if(individualRepo.existsByDocumentNumberAndDocumentType(savedIndi.getDocumentNumber(), dto.documentType())) {
+                throw new DataIntegrityViolationException("This document number is already in used. # = "+dto.documentNumber());
+            }
+            savedIndi.setDocumentType(dto.documentType());
         }
 
-        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber()) && dto.getDocumentNumber() != null){
-            if(individualRepo.existsByDocumentNumberAndDocumentType(dto.getDocumentNumber(), dto.getDocumentType())) {
-                throw new DataIntegrityViolationException("This document number is already in used. doc-number = "+dto.getDocumentNumber());
+        if (dto.documentNumber() != null && differentStrings(savedIndi.getDocumentNumber(), dto.documentNumber())) {
+            if (individualRepo.existsByDocumentNumberAndDocumentType(dto.documentNumber(), dto.documentType())) {
+                throw new DataIntegrityViolationException("This document number is already in used. doc-number = " + dto.documentNumber());
             }
-            savedIndi.setDocumentNumber(upper(dto.getDocumentNumber()));
+            savedIndi.setDocumentNumber(upper(dto.documentNumber()));
         }
 
         // TODO: ADD EMAIL VALIDATION BEFORE UPDATING IT
-        if(differentStrings(savedIndi.getEmail(), dto.getEmail())){
-            if(individualRepo.existsByEmailIgnoreCase(dto.getEmail()) && dto.getEmail() != null) {
-                throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
+        if (differentStrings(savedIndi.getEmail(), dto.email())) {
+            if (dto.email() != null && individualRepo.existsByEmailIgnoreCase(dto.email())) {
+                throw new DataIntegrityViolationException("This email is already in used. Email = " + dto.email());
             }
-            savedIndi.setEmail(AppFunctions.upper(dto.getEmail()));
+            savedIndi.setEmail(upper(dto.email()));
         }
 
-        if(differentStrings(savedIndi.getTelephone(), dto.getTelephone())){
-            savedIndi.setTelephone(dto.getTelephone());
+        if (differentStrings(savedIndi.getTelephone(), dto.telephone())) {
+            savedIndi.setTelephone(dto.telephone());
         }
 
-        if(differentStrings(savedIndi.getAddress(), dto.getAddress())){
-            savedIndi.setAddress(upper(dto.getAddress()));
+        if (differentStrings(savedIndi.getAddress(), dto.address())) {
+            savedIndi.setAddress(upper(dto.address()));
         }
 
         return individualRepo.save(savedIndi);
