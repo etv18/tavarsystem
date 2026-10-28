@@ -43,18 +43,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto createUser(CreateUserRequestDto dto) {
-        if(userRepo.existsByUsername(dto.getUsername())) {
-            throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
+        if(userRepo.existsByUsername(dto.username())) {
+            throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.username());
         }
 
         String msgWhenIndividualNotFound =
-                "Individual assignation failed when creating user. Individual ID: " + dto.getIndividualId();
+                "Individual assignation failed when creating user. Individual ID: " + dto.individualId();
 
         User user = User.builder()
-                .username(dto.getUsername())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .role(roleService.findRoleByName(dto.getRoleName()))
-                .individual(indiService.getSingleIndividual(dto.getIndividualId(), msgWhenIndividualNotFound))
+                .username(dto.username())
+                .password(passwordEncoder.encode(dto.password()))
+                .role(roleService.findRoleByName(dto.roleName()))
+                .individual(indiService.getSingleIndividual(dto.individualId(), msgWhenIndividualNotFound))
                 .build();
         return userMapper.toDto(userRepo.save(user));
     }
