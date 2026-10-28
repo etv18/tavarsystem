@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.controllers;
 
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
+import com.tavarlabs.tavarsystem.dtos.individual.UpdateIndividualRequest;
 import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.mappers.IndividualMapper;
@@ -35,7 +36,7 @@ public class IndividualController {
 
     @PutMapping
     public IndividualDto updateIndividual(
-            @RequestBody IndividualDto requestDto
+            @RequestBody UpdateIndividualRequest requestDto
     ) {
         Individual individual =  individualService.updateIndividual(requestDto);
         return individualMapper.toResponseDto(individual);
