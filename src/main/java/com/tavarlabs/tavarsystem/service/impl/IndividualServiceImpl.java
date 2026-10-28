@@ -35,13 +35,13 @@ public class IndividualServiceImpl implements IndividualService {
         }
 
         Individual individual = Individual.builder()
-                .firstName(dto.getFirstName().toUpperCase())
-                .lastName(dto.getLastName().toUpperCase())
+                .firstName(upper(dto.getFirstName()))
+                .lastName(upper(dto.getLastName()))
                 .documentType(dto.getDocumentType())
-                .documentNumber(dto.getDocumentNumber().toUpperCase())
-                .email(dto.getEmail().toUpperCase())
-                .telephone(dto.getTelephone().toUpperCase())
-                .address(dto.getAddress().toUpperCase())
+                .documentNumber(upper(dto.getDocumentNumber()))
+                .email(upper(dto.getEmail()))
+                .telephone(dto.getTelephone())
+                .address(upper(dto.getAddress()))
                 .build();
 
         return individualMapper.toResponseDto(individualRepo.save(individual));
@@ -65,11 +65,11 @@ public class IndividualServiceImpl implements IndividualService {
         Individual savedIndi = getSingleIndividual(dto.getPublicId());
 
         if(differentStrings(savedIndi.getFirstName(), dto.getFirstName())){
-            savedIndi.setFirstName(dto.getFirstName().toUpperCase());
+            savedIndi.setFirstName(upper(dto.getFirstName()));
         }
 
         if(differentStrings(savedIndi.getLastName(), dto.getLastName())){
-            savedIndi.setLastName(dto.getLastName().toUpperCase());
+            savedIndi.setLastName(upper(dto.getLastName()));
         }
 
         // TODO: ADD DocumentType VALIDATION BEFORE UPDATING IT
@@ -77,30 +77,28 @@ public class IndividualServiceImpl implements IndividualService {
             savedIndi.setDocumentType(dto.getDocumentType());
         }
 
-        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber())){
+        if(differentStrings(savedIndi.getDocumentNumber(), dto.getDocumentNumber()) && dto.getDocumentNumber() != null){
             if(individualRepo.existsByDocumentNumberAndDocumentType(dto.getDocumentNumber(), dto.getDocumentType())) {
                 throw new DataIntegrityViolationException("This document number is already in used. doc-number = "+dto.getDocumentNumber());
             }
-            savedIndi.setDocumentNumber(dto.getDocumentNumber().toUpperCase());
+            savedIndi.setDocumentNumber(upper(dto.getDocumentNumber()));
         }
 
         // TODO: ADD EMAIL VALIDATION BEFORE UPDATING IT
         if(differentStrings(savedIndi.getEmail(), dto.getEmail())){
-            if(individualRepo.existsByEmailIgnoreCase(dto.getEmail())) {
+            if(individualRepo.existsByEmailIgnoreCase(dto.getEmail()) && dto.getEmail() != null) {
                 throw new DataIntegrityViolationException("This email is already in used. Email = "+dto.getEmail());
             }
-            savedIndi.setEmail(dto.getEmail().toUpperCase());
+            savedIndi.setEmail(AppFunctions.upper(dto.getEmail()));
         }
 
         if(differentStrings(savedIndi.getTelephone(), dto.getTelephone())){
-            savedIndi.setTelephone(dto.getTelephone().toUpperCase());
+            savedIndi.setTelephone(dto.getTelephone());
         }
 
         if(differentStrings(savedIndi.getAddress(), dto.getAddress())){
-            savedIndi.setAddress(dto.getAddress().toUpperCase());
+            savedIndi.setAddress(upper(dto.getAddress()));
         }
-
-        // TODO: ADD statement for updating user obj
 
         return individualRepo.save(savedIndi);
     }
@@ -130,5 +128,9 @@ public class IndividualServiceImpl implements IndividualService {
     private boolean differentStrings(String currentVal, String newVal){
         if(currentVal == null || newVal == null) return true;
         return !currentVal.equalsIgnoreCase(newVal);
+    }
+
+    private String upper(String arg){
+        return AppFunctions.upper(arg);
     }
 }

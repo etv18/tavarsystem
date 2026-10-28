@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,5 +22,5 @@ public class IndividualDto {
     private String telephone;
     private String address;
     private boolean deleted;
-    private String userId;
+    private UUID userId;
 }

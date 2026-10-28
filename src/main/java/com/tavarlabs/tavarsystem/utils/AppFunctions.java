@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 
 import javax.crypto.SecretKey;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class AppFunctions {
     public static boolean differentStrings(String currentVal, String newVal){
@@ -33,5 +34,9 @@ public class AppFunctions {
 
         return Arrays.stream(enumClass.getEnumConstants())
                 .anyMatch(e -> e.name().equalsIgnoreCase(name));
+    }
+
+    public static String upper(String s) {
+        return s == null ? null : s.toUpperCase(Locale.ROOT);
     }
 }

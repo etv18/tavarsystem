@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.controllers;
 
 import com.tavarlabs.tavarsystem.dtos.individual.CreateIndividualRequestDto;
 import com.tavarlabs.tavarsystem.dtos.individual.IndividualDto;
+import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.mappers.IndividualMapper;
 import com.tavarlabs.tavarsystem.service.IndividualService;
@@ -32,24 +33,28 @@ public class IndividualController {
         return individualService.getAllIndividuals();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateIndividual(
+    @PutMapping
+    public IndividualDto updateIndividual(
             @RequestBody IndividualDto requestDto
     ) {
         Individual individual =  individualService.updateIndividual(requestDto);
-        return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+        return individualMapper.toResponseDto(individual);
     }
 
     @GetMapping("/{publicId}")
-    public ResponseEntity<?> getSingleIndividual(@PathVariable("publicId") String publicId){
+    public IndividualDto getSingleIndividual(
+            @PathVariable("publicId") String publicId
+    ){
         Individual individual = individualService.getSingleIndividual(publicId);
-        return ResponseEntity.ok(individualMapper.toResponseDto(individual));
+        return individualMapper.toResponseDto(individual);
     }
 
 
     @DeleteMapping("/{publicId}")
-    public ResponseEntity<?> deleteIndividual(@PathVariable("publicId") String publicId){
+    public SimpleMessage deleteIndividual(
+            @PathVariable("publicId") String publicId
+    ){
         individualService.deleteIndividual(publicId);
-        return ResponseEntity.ok(Map.of("message", "Individual deleted successfully."));
+        return new SimpleMessage("Individual deleted successfully.");
     }
 }
