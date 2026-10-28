@@ -1,21 +1,15 @@
 package com.tavarlabs.tavarsystem.dtos.individual;
 
 import com.tavarlabs.tavarsystem.enums.DocumentType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class CreateIndividualRequestDto {
-    private String firstName;
-    private String lastName;
-    private DocumentType documentType;
-    private String documentNumber;
-    private String email;
-    private String telephone;
-    private String address;
-}
+public record CreateIndividualRequestDto(
+        String firstName,
+        String lastName,
+        DocumentType documentType,
+        String documentNumber,
+        String email,
+        String telephone,
+        String address
+) {}
