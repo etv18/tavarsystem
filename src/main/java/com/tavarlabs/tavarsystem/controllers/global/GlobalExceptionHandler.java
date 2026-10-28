@@ -14,6 +14,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -102,6 +104,19 @@ public class GlobalExceptionHandler {
                 .body(
                         ExceptionBodyDto.builder()
                                 .error("DATA INTEGRITY VIOLATION")
+                                .message(ex.getMessage())
+                                .build()
+                );
+    }
+
+    // Added when using SQLite
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<?> handleSQLException(SQLException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ExceptionBodyDto.builder()
+                                .error("SQL Exception")
                                 .message(ex.getMessage())
                                 .build()
                 );
