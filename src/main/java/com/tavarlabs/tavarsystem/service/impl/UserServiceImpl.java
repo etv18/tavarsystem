@@ -51,9 +51,9 @@ public class UserServiceImpl implements UserService {
                 "Individual assignation failed when creating user. Individual ID: " + dto.individualId();
 
         User user = User.builder()
-                .username(dto.username())
+                .username(upper(dto.username()))
                 .password(passwordEncoder.encode(dto.password()))
-                .role(roleService.findRoleByName(dto.roleName()))
+                .role(roleService.findRoleByName(upper(dto.roleName())))
                 .individual(indiService.getSingleIndividual(dto.individualId(), msgWhenIndividualNotFound))
                 .build();
         return userMapper.toDto(userRepo.save(user));
@@ -72,22 +72,22 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        User savedUser = getSingleUser(dto.publicId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
+        User savedUser = getSingleUser(dto.publicId().toString());
 
         if(AppFunctions.differentStrings(savedUser.getUsername(), dto.username())){
-            if(userRepo.existsByUsername(dto.username())) {
+            if(userRepo.existsByUsername(upper(dto.username()))) {
                 throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.username());
             }
 
-            savedUser.setUsername(dto.username());
+            savedUser.setUsername(upper(dto.username()));
         }
 
         if(AppFunctions.differentStrings(savedUser.getPassword(), dto.password())){
             savedUser.setPassword(passwordEncoder.encode(dto.password()));
         }
 
-        if(!savedUser.getRole().getName().equals(dto.roleName())){
-            Role dtoRole = roleService.findRoleByName(dto.roleName());
+        if(!savedUser.getRole().getName().equals(upper(dto.roleName()))){
+            Role dtoRole = roleService.findRoleByName(upper(dto.roleName()));
             savedUser.setRole(dtoRole);
         }
 
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 
         // Updating actions
         Set<String> savedUserActions = savedUser.getActions().stream()
-                .map(userAction -> userAction.getAction().getCode())
+                .map(userAction -> upper(userAction.getAction().getCode()))
                 .collect(Collectors.toSet());
         if(!savedUserActions.equals(dto.actions())){
             userActionRepo.deleteAllByUserId(savedUser.getId());
@@ -130,5 +130,9 @@ public class UserServiceImpl implements UserService {
                 ));
         user.setDeleted(true);
         userRepo.save(user);
+    }
+
+    private String upper(String arg){
+        return AppFunctions.upper(arg);
     }
 }
