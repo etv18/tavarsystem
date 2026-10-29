@@ -1,25 +1,26 @@
 package com.tavarlabs.tavarsystem.dtos.user;
 
-import com.tavarlabs.tavarsystem.enums.RoleName;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class UpdateUserRequestDto {
-    private UUID publicId;
-    private String username;
-    private String password;
-    private UUID roleId; // later change to UUID for filtering only by their publicId
-    private Set<String> actions;
-    private UUID individualId;
-    private boolean deleted;
-    private boolean active;
+public record UpdateUserRequestDto(
+        UUID publicId,
+        String username,
+        String password,
+        String roleName,
+        Set<String> actions,
+        UUID individualId,
+        boolean deleted,
+        boolean active
+) {
+    @Override
+    public String toString() {
+        return "UpdateUserRequestDto[publicId=" + publicId + ", username=" + username
+                + ", roleName=" + roleName + ", actions=" + actions
+                + ", individualId=" + individualId + ", deleted=" + deleted
+                + ", active=" + active + "]";
+    }
 }

@@ -1,25 +1,17 @@
 package com.tavarlabs.tavarsystem.dtos.user;
 
-import com.tavarlabs.tavarsystem.enums.RoleName;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.management.relation.Role;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class UserDto {
-    private UUID publicId;
-    private String username;
-    private String role;
-    private Set<String> actions;
-    private UUID individualId;
-    private boolean deleted;
-    private boolean active;
-}
+public record UserDto(
+        UUID publicId,
+        String username,
+        String role,
+        Set<String> actions,
+        UUID individualId,
+        boolean deleted,
+        boolean active
+) {}

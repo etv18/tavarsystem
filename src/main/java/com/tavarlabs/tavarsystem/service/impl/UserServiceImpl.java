@@ -72,36 +72,36 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("You must provide accurate info about the record you want to update.");
         }
 
-        User savedUser = getSingleUser(dto.getPublicId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
+        User savedUser = getSingleUser(dto.publicId().toString()); // TODO: ADD a method from the repo which allows to get not deleted users
 
-        if(AppFunctions.differentStrings(savedUser.getUsername(), dto.getUsername())){
-            if(userRepo.existsByUsername(dto.getUsername())) {
-                throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.getUsername());
+        if(AppFunctions.differentStrings(savedUser.getUsername(), dto.username())){
+            if(userRepo.existsByUsername(dto.username())) {
+                throw new DataIntegrityViolationException("This username is already in used. Username = " + dto.username());
             }
 
-            savedUser.setUsername(dto.getUsername());
+            savedUser.setUsername(dto.username());
         }
 
-        if(AppFunctions.differentStrings(savedUser.getPassword(), dto.getPassword())){
-            savedUser.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if(AppFunctions.differentStrings(savedUser.getPassword(), dto.password())){
+            savedUser.setPassword(passwordEncoder.encode(dto.password()));
         }
 
-        if(!savedUser.getRole().getPublicId().equals(dto.getRoleId())){
-            Role dtoRole = roleService.findRoleByPublicId(dto.getRoleId());
+        if(!savedUser.getRole().getName().equals(dto.roleName())){
+            Role dtoRole = roleService.findRoleByName(dto.roleName());
             savedUser.setRole(dtoRole);
         }
 
-        if(savedUser.isActive() != dto.isActive()){
-            savedUser.setActive(dto.isActive());
+        if(savedUser.isActive() != dto.active()){
+            savedUser.setActive(dto.active());
         }
 
         // Updating actions
         Set<String> savedUserActions = savedUser.getActions().stream()
                 .map(userAction -> userAction.getAction().getCode())
                 .collect(Collectors.toSet());
-        if(!savedUserActions.equals(dto.getActions())){
+        if(!savedUserActions.equals(dto.actions())){
             userActionRepo.deleteAllByUserId(savedUser.getId());
-            Set<Action> savedActions = new HashSet<>(actionRepo.findAllByCodeIn(dto.getActions()));
+            Set<Action> savedActions = new HashSet<>(actionRepo.findAllByCodeIn(dto.actions()));
 
             Set<UserAction> newUserActions = savedActions.stream().map(action -> {
                 return new UserAction(savedUser, action, true);
