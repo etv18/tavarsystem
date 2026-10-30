@@ -8,6 +8,7 @@ import com.tavarlabs.tavarsystem.entity.Individual;
 import com.tavarlabs.tavarsystem.mappers.IndividualMapper;
 import com.tavarlabs.tavarsystem.service.IndividualService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class IndividualController {
 
     @PostMapping
     public IndividualDto createIndividual(
-            @RequestBody CreateIndividualRequestDto requestDto
+            @Valid @RequestBody CreateIndividualRequestDto requestDto
     ) {
         return individualService.createIndividual(requestDto);
     }
