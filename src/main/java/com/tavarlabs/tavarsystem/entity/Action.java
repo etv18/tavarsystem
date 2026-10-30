@@ -24,7 +24,7 @@ public class Action {
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
     private UUID publicId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String code;
 
     @Column(name = "created_at", nullable = false)
