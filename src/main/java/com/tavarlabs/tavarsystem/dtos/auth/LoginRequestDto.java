@@ -1,15 +1,6 @@
 package com.tavarlabs.tavarsystem.dtos.auth;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class LoginRequestDto {
-    private String username;
-    private String password;
-}
+public record LoginRequestDto(String username, String password) { }

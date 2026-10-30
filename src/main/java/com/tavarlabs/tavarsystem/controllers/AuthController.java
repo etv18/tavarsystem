@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.WebUtils;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,8 +32,8 @@ public class AuthController {
     ){
         try {
             UserDetails userDetails = authenticationService.authenticate(
-                    loginRequest.getUsername(),
-                    loginRequest.getPassword()
+                    loginRequest.username(),
+                    loginRequest.password()
             );
 
             String accessJwt = authenticationService.generateToken(userDetails, AppKeywords.accessTkn);
