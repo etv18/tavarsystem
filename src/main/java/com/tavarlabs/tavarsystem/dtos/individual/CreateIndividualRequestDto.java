@@ -7,9 +7,11 @@ import lombok.Builder;
 @Builder
 public record CreateIndividualRequestDto(
         @NotBlank(message = "First name is required")
+        @Pattern(regexp = "^[a-zA-Z]+$", message = "Role's name only accepts letters (a-z).")
         String firstName,
 
         @NotBlank(message = "Last name is required")
+        @Pattern(regexp = "^[a-zA-Z]+$", message = "Role's name only accepts letters (a-z).")
         String lastName,
 
         @NotNull(message = "Please indicate a valid document type")

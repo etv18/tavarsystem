@@ -10,6 +10,7 @@ import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public AuthResponseDto login(
-            @RequestBody LoginRequestDto loginRequest,
+            @Valid @RequestBody LoginRequestDto loginRequest,
             HttpServletResponse response
     ){
         try {

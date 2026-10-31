@@ -1,9 +1,12 @@
 package com.tavarlabs.tavarsystem.dtos.auth;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.Set;
 import java.util.UUID;
 
 public record CreateRoleRequest(
-       String name,
-       Set<String> actionCodes   // optional
+        @NotBlank(message = "Role's name is required")
+        String name,
+        Set<String> actionCodes   // optional
 ) {}

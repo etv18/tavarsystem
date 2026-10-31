@@ -1,4 +1,9 @@
 package com.tavarlabs.tavarsystem.dtos.auth;
 
-public record CreateActionRequest(String code) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateActionRequest(
+        @NotBlank(message = "You must provide a code")
+        String code
+) {}
 

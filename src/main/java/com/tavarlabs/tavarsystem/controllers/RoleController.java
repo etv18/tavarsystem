@@ -6,6 +6,7 @@ import com.tavarlabs.tavarsystem.dtos.auth.RoleActionsResponse;
 import com.tavarlabs.tavarsystem.dtos.message.SimpleMessage;
 import com.tavarlabs.tavarsystem.service.RoleService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,16 @@ public class RoleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RoleActionsResponse create(@RequestBody CreateRoleRequest request){
+    public RoleActionsResponse create(
+            @Valid @RequestBody CreateRoleRequest request
+    ){
         return roleService.createRole(request);
     }
 
     @PostMapping("/override/action")
-    public RoleActionsResponse assign(@RequestBody RoleActionsRequest request) {
+    public RoleActionsResponse assign(
+            @Valid @RequestBody RoleActionsRequest request
+    ) {
         return roleService.overrideActions(request);
     }
 

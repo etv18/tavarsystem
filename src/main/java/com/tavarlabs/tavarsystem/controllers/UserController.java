@@ -10,6 +10,7 @@ import com.tavarlabs.tavarsystem.service.RoleService;
 import com.tavarlabs.tavarsystem.service.UserService;
 import com.tavarlabs.tavarsystem.utils.AppKeywords;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class UserController {
 
     @PostMapping
     public UserDto createUser(
-            @RequestBody CreateUserRequestDto dto
+            @Valid @RequestBody CreateUserRequestDto dto
     ) {
         return userService.createUser(dto);
     }
@@ -38,7 +39,7 @@ public class UserController {
 
     @PutMapping
     public UserDto updateUser(
-            @RequestBody UpdateUserRequestDto dto,
+            @Valid @RequestBody UpdateUserRequestDto dto,
             HttpServletResponse response
     ){
         return userService.updateUser(dto, response);

@@ -38,7 +38,7 @@ public class IndividualController {
 
     @PutMapping
     public IndividualDto updateIndividual(
-            @RequestBody UpdateIndividualRequest requestDto
+           @Valid @RequestBody UpdateIndividualRequest requestDto
     ) {
         Individual individual =  individualService.updateIndividual(requestDto);
         return individualMapper.toResponseDto(individual);
