@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +37,7 @@ public class DataInitializer {
                     .firstName("JOHN")
                     .lastName("DOE")
                     .documentType(DocumentType.CEDULA)
-                    .documentNumber("732XXXXXXXX")
+                    .documentNumber("73200000001")
                     .email(null)
                     .telephone("4019826532")
                     .address("123 main st apt 2, My City, Big State".toUpperCase())
@@ -86,6 +87,86 @@ public class DataInitializer {
             userActionRepo.saveAll(List.of(ac1, ac2));
 
             System.out.println("---------------> User data saved!!");
+        };
+    }
+
+    @Bean
+    CommandLineRunner initCatalog(
+            TaxTypeRepository taxTypeRepo,
+            CategoryRepository categoryRepo,
+            ItemRepository itemRepo
+    ) {
+        return args -> {
+            // Guard: if tax types already exist, this seed already ran
+            if (taxTypeRepo.count() > 0) return;
+
+            // ---------- TAX TYPES (ITBIS) ----------
+            List<TaxType> taxTypes = taxTypeRepo.saveAll(List.of(
+                    TaxType.builder().name("ITBIS_18").build(),
+                    TaxType.builder().name("ITBIS_16").build(),
+                    TaxType.builder().name("ITBIS_0").build(),
+                    TaxType.builder().name("EXENTO").build()
+            ));
+            TaxType itbis18 = taxTypes.get(0);
+            TaxType itbis16 = taxTypes.get(1);
+            TaxType exento  = taxTypes.get(3);
+
+            // ---------- CATEGORIES ----------
+            // Parents must be saved BEFORE their children. CategoryRepository.parent has no
+            // cascade, so saving a child that points to an unsaved parent throws
+            // TransientPropertyValueException.
+            List<Category> parents = categoryRepo.saveAll(List.of(
+                    Category.builder().name("ALIMENTOS").build(),
+                    Category.builder().name("BEBIDAS").build(),
+                    Category.builder().name("HOGAR").build()
+            ));
+            Category alimentos = parents.get(0);
+            Category bebidas   = parents.get(1);
+
+            // Children point to the saved parent instances (the ones returned by saveAll)
+            Category lacteos = categoryRepo.save(
+                    Category.builder().name("LACTEOS").parent(alimentos).build());
+            Category refrescos = categoryRepo.save(
+                    Category.builder().name("REFRESCOS").parent(bebidas).build());
+
+            // ---------- ITEMS (sample data for testing) ----------
+            itemRepo.saveAll(List.of(
+                    Item.builder()
+                            .code("ITM-0001")
+                            .name("REFRESCO COLA 600ML")
+                            .description("REFRESCO GASEOSO SABOR COLA, BOTELLA 600ML")
+                            .category(refrescos)
+                            .unitPrice(new BigDecimal("50.00"))
+                            .taxType(itbis18)
+                            .unitOfMeasure("UNIT")
+                            .quantity(100)
+                            .active(true)
+                            .build(),
+                    Item.builder()
+                            .code("ITM-0002")
+                            .name("LECHE ENTERA 1L")
+                            .description("LECHE ENTERA, CAJA 1 LITRO")
+                            .category(lacteos)
+                            .unitPrice(new BigDecimal("95.00"))
+                            .taxType(exento)
+                            .unitOfMeasure("UNIT")
+                            .quantity(60)
+                            .active(true)
+                            .build(),
+                    Item.builder()
+                            .code("ITM-0003")
+                            .name("CAFE MOLIDO 1LB")
+                            .description("CAFE MOLIDO TOSTADO, PAQUETE 1 LIBRA")
+                            .category(alimentos)
+                            .unitPrice(new BigDecimal("310.00"))
+                            .taxType(itbis16)
+                            .unitOfMeasure("UNIT")
+                            .quantity(40)
+                            .active(true)
+                            .build()
+            ));
+
+            System.out.println("---------------> Catalog data saved!!");
         };
     }
 }
