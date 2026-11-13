@@ -29,7 +29,16 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column(name = "unit_price", nullable = false)
+    /*
+     * precision means the total of digits the unitPrice will store in db
+     * scale means the total of digits will be set after the point basically
+     * is set up this way:
+     *
+     *      - 12 digits total
+     *      - 10 digits before the .
+     *      - 2  digits after the .
+     * */
+    @Column(name = "unit_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice = BigDecimal.ZERO;
 
     @ManyToOne
