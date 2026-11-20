@@ -2,6 +2,7 @@ package com.tavarlabs.tavarsystem.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,6 +25,11 @@ public abstract class BaseEntity {
     @Getter
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Getter
+    @Setter
+    @Column(name = "is_deleted")
+    private boolean deleted = false;
 
     @PrePersist
     protected void onCreate() {
