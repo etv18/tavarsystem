@@ -1,9 +1,7 @@
 package com.tavarlabs.tavarsystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.tavarlabs.tavarsystem.utils.UpperCaseConverter;
+import jakarta.persistence.*;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,6 +12,7 @@ import lombok.*;
 @Builder
 public class Category extends BaseEntity {
 
+    @Convert(converter = UpperCaseConverter.class)
     @Column(nullable = false, length = 100, unique = true)
     private String name;
 

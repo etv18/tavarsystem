@@ -1,9 +1,7 @@
 package com.tavarlabs.tavarsystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.tavarlabs.tavarsystem.utils.UpperCaseConverter;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,12 +14,15 @@ import java.math.BigDecimal;
 @Builder
 public class Item extends BaseEntity {
 
+    @Convert(converter = UpperCaseConverter.class)
     @Column(nullable = false, length = 100, unique = true)
     private String code;
 
+    @Convert(converter = UpperCaseConverter.class)
     @Column(nullable = false, length = 130)
     private String name;
 
+    @Convert(converter = UpperCaseConverter.class)
     @Column(nullable = false, length = 256)
     private String description;
 
@@ -45,6 +46,7 @@ public class Item extends BaseEntity {
     @JoinColumn(name = "tax_type_id", nullable = false)
     private TaxType taxType;
 
+    @Convert(converter = UpperCaseConverter.class)
     @Column(name = "unit_of_measure", nullable = false, length = 30)
     private String unitOfMeasure;
 
