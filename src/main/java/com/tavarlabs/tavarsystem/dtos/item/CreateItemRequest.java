@@ -17,7 +17,7 @@ public record CreateItemRequest(
         @NotBlank @Size(max = 100)
         String category,
 
-        @NotNull @DecimalMin(value = "0.00") @Digits(integer = 10, fraction = 2) // Synced with Item.uniPrice field db config
+        @NotNull @DecimalMin(value = "1.00") @Digits(integer = 10, fraction = 2) // Synced with ItemMapper.uniPrice field db config
         BigDecimal unitPrice,
 
         @NotBlank @Size(max = 100)
@@ -26,5 +26,5 @@ public record CreateItemRequest(
         @NotBlank @Size(max = 30)
         String unitOfMeasure,
 
-        long quantity // quantity is initialized in 0 in the Item entity so it's not a mandatory field.
+        long quantity // quantity is initialized in 0 in the ItemMapper entity so it's not a mandatory field.
 ) {}
