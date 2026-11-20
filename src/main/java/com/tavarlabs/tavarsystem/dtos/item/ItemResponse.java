@@ -12,5 +12,6 @@ public record ItemResponse(
         BigDecimal unitPrice,
         String unitOfMeasure,
         long quantity,
-        boolean active
+        boolean active,
+        String taxType
 ) {}
