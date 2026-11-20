@@ -42,7 +42,7 @@ public class Item extends BaseEntity {
     private BigDecimal unitPrice = BigDecimal.ZERO;
 
     @ManyToOne
-    @JoinColumn(name = "tax_type_id")
+    @JoinColumn(name = "tax_type_id", nullable = false)
     private TaxType taxType;
 
     @Column(name = "unit_of_measure", nullable = false, length = 30)
