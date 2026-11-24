@@ -13,5 +13,5 @@ public interface ItemService {
     List<ItemResponse> getAll();
     ItemResponse updateItem(UpdateItemRequest request);
     SimpleMessage deleteItem(UUID publicId);
-    ItemResponse getSingleItem(String code);
+    ItemResponse getSingleItem(UUID publicId);
 }

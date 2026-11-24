@@ -52,14 +52,13 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemResponse updateItem(UpdateItemRequest request) {
-        Item item = findSingleItemByCode(request.code());
+        Item item = findSingleItemByPublicId(request.publicId());
 
-        item.setCode(request.code());
         item.setName(request.name());
         item.setDescription(request.description());
         item.setCategory(categoryRepo.findByName(request.name()));
         item.setUnitPrice(request.unitPrice());
-        item.setTaxType(taxTypeRepo.findByName(request.name()));
+        item.setTaxType(taxTypeRepo.findByName(request.taxType()));
         item.setUnitOfMeasure(request.unitOfMeasure());
         item.setQuantity(request.quantity());
         item.setActive(request.active());
@@ -70,22 +69,20 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public SimpleMessage deleteItem(UUID publicId) {
-        Item item = itemRepo.findUndeletedByPublicId(publicId).orElseThrow(
-                () -> new EntityNotFoundException("Item was not found. Public id: " + publicId)
-        );
+        Item item = findSingleItemByPublicId(publicId);
         item.setDeleted(true);
         itemRepo.save(item);
         return new SimpleMessage("Deleted successfully");
     }
 
     @Override
-    public ItemResponse getSingleItem(String code) {
-        return itemMapper.toResponse(findSingleItemByCode(code));
+    public ItemResponse getSingleItem(UUID publicId) {
+        return itemMapper.toResponse(findSingleItemByPublicId(publicId));
     }
 
-    private Item findSingleItemByCode(String code){
-        return itemRepo.findUndeletedByCode(code).orElseThrow(
-                () -> new EntityNotFoundException("Item was not found. Code: " + code)
+    private Item findSingleItemByPublicId(UUID publicId){
+        return itemRepo.findUndeletedByPublicId(publicId).orElseThrow(
+                () -> new EntityNotFoundException("Item was not found. Public Id: " + publicId)
         );
     }
 }
