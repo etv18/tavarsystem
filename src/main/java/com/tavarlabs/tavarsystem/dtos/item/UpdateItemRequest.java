@@ -3,8 +3,13 @@ package com.tavarlabs.tavarsystem.dtos.item;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public record UpdateItemRequest(
+        //UUID uses @NotNull instead of @Notblank cause the value it holds is not a string it's a UUID which are bytes in memory
+        @NotNull(message = "You must provide item's publicId value.")
+        UUID publicId,
+
         @NotBlank @Size(max = 100)
         String code,
 
