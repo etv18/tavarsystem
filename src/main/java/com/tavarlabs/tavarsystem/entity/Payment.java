@@ -16,6 +16,7 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "invoice_header_id")
     private InvoiceHeader invoiceHeader;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 100, unique = true)
     private String method; // ENUM: CASH, CARD, TRANSFER
 
