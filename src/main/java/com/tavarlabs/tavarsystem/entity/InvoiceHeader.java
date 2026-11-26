@@ -61,7 +61,7 @@ public class InvoiceHeader extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false, length = 30)
-    private PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus; // PAID, PARTIAL, PENDING
 
     @Column(name = "provider_response", length = 1024)
     private String providerResponse;
