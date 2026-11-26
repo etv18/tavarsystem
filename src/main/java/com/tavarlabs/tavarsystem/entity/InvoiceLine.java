@@ -1,9 +1,6 @@
 package com.tavarlabs.tavarsystem.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -16,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class InvoiceLine extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "invoice_header_id", nullable = false)
     private InvoiceHeader invoiceHeader;
 
@@ -29,7 +26,6 @@ public class InvoiceLine extends BaseEntity {
 
     @Column(name = "unit_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal unitPrice = BigDecimal.ZERO; // snapshot at time of sale
-
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal discount = BigDecimal.ZERO;

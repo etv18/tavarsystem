@@ -8,6 +8,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -16,8 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class InvoiceHeader extends BaseEntity {
-
-    //TODO: FIX ENUMS
 
     @Column(nullable = false, length = 256, unique = true)
     private String code;
@@ -34,7 +34,7 @@ public class InvoiceHeader extends BaseEntity {
     private String ncf;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 3)
+    @Column(name = "ncf_type", nullable = false, length = 3)
     private NcfType ncfType; // "ENUM: 31,32,33,34,41,43,44,45,46,47"
 
     @Enumerated(EnumType.STRING)
@@ -68,4 +68,7 @@ public class InvoiceHeader extends BaseEntity {
 
     @Column(name = "voided_at")
     private LocalDateTime voidedAt; // English for: Fecha en la que se anula la factura
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<InvoiceLine> lines = new HashSet<>();
 }
