@@ -1,14 +1,14 @@
 package com.tavarlabs.tavarsystem.enums;
 
 public enum NcfType {
-    e31,
-    e32,
-    e33,
-    e34,
-    e41,
-    e43,
-    e44,
-    e45,
-    e46,
-    e47
+    E31,
+    E32,
+    E33,
+    E34,
+    E41,
+    E43,
+    E44,
+    E45,
+    E46,
+    E47
 }
